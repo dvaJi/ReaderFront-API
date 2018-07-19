@@ -31,7 +31,7 @@ export const chapterCreate = {
 
     language: {
       name: 'language',
-      type: GraphQLString
+      type: GraphQLInt
     },
 
     name: {
@@ -98,7 +98,7 @@ export const chapterUpdate = {
 
     language: {
       name: 'language',
-      type: GraphQLString
+      type: GraphQLInt
     },
 
     name: {

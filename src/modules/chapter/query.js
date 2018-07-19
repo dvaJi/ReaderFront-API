@@ -9,7 +9,7 @@ import { getAll, getByWork } from './resolvers';
 export const chapters = {
   type: new GraphQLList(ChapterType),
   args: {
-    language: { type: GraphQLString },
+    language: { type: GraphQLInt },
     orderBy: { type: GraphQLString },
     first: { type: GraphQLInt },
     offset: { type: GraphQLInt }
@@ -22,7 +22,7 @@ export const chaptersByWork = {
   type: new GraphQLList(ChapterType),
   args: {
     workStub: { type: GraphQLString },
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getByWork
 };

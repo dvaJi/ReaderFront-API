@@ -16,7 +16,7 @@ export const worksDescriptionCreate = {
 
     language: {
       name: 'language',
-      type: GraphQLString
+      type: GraphQLInt
     },
 
     description: {
@@ -43,7 +43,7 @@ export const worksDescriptionUpdate = {
 
     language: {
       name: 'language',
-      type: GraphQLString
+      type: GraphQLInt
     },
 
     description: {

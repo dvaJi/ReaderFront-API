@@ -23,7 +23,7 @@ const ChapterType = new GraphQLObjectType({
     chapter: { type: GraphQLInt },
     subchapter: { type: GraphQLInt },
     volume: { type: GraphQLInt },
-    language: { type: GraphQLString },
+    language: { type: GraphQLInt },
     name: { type: GraphQLString },
     stub: { type: GraphQLString },
     uniqid: { type: GraphQLString },

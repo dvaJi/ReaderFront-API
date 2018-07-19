@@ -18,7 +18,7 @@ export const works = {
     orderBy: { type: GraphQLString },
     first: { type: GraphQLInt },
     offset: { type: GraphQLInt },
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getAll
 };
@@ -28,7 +28,7 @@ export const work = {
   type: WorkType,
   args: {
     stub: { type: GraphQLString },
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getByStub
 };
@@ -38,7 +38,7 @@ export const workById = {
   type: WorkType,
   args: {
     workId: { type: GraphQLInt },
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getById
 };
@@ -47,7 +47,7 @@ export const workById = {
 export const workRandom = {
   type: WorkType,
   args: {
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getRandom
 };

@@ -1,47 +1,49 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('users', {
+    return queryInterface.createTable('posts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        allowNull: false
+      },
+      uniqid: {
         type: Sequelize.STRING
       },
-      email: {
-        type: Sequelize.TEXT
+      type: {
+        type: Sequelize.INTEGER
       },
-      password: {
-        type: Sequelize.TEXT
-      },
-      role: {
-        type: Sequelize.TEXT
-      },
-      activated: {
-        type: Sequelize.BOOLEAN
-      },
-      activatedToken: {
-        type: Sequelize.TEXT
-      },
-      banned: {
-        type: Sequelize.BOOLEAN
-      },
-      bannedReason: {
-        type: Sequelize.TEXT
-      },
-      newPasswordToken: {
-        type: Sequelize.TEXT
-      },
-      newPasswordRequested: {
-        type: Sequelize.BOOLEAN
-      },
-      lastIp: {
+      title: {
         type: Sequelize.STRING
       },
-      lastLogin: {
-        type: Sequelize.DATE
+      stub: {
+        type: Sequelize.STRING
+      },
+      status: {
+        type: Sequelize.INTEGER
+      },
+      sticky: {
+        type: Sequelize.BOOLEAN
+      },
+      content: {
+        type: Sequelize.TEXT
+      },
+      category: {
+        type: Sequelize.INTEGER
+      },
+      language: {
+        type: Sequelize.INTEGER
+      },
+      thumbnail: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +56,6 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('users');
+    return queryInterface.dropTable('posts');
   }
 };

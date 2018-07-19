@@ -10,6 +10,7 @@ import * as worksCover from '../../modules/works-cover/query';
 import * as chapter from '../../modules/chapter/query';
 import * as page from '../../modules/page/query';
 import * as people from '../../modules/people/query';
+import * as post from '../../modules/post/query';
 
 // Query
 const query = new GraphQLObjectType({
@@ -23,7 +24,8 @@ const query = new GraphQLObjectType({
     ...worksDescription,
     ...WorksGenre,
     ...worksCover,
-    ...people
+    ...people,
+    ...post
   })
 });
 

@@ -1,5 +1,6 @@
 // Imports
 import graphqlHTTP from 'express-graphql';
+import depthLimit from 'graphql-depth-limit';
 
 // App Imports
 import serverConfig from '../config/server.json';
@@ -19,6 +20,7 @@ export default function(server) {
       schema,
       graphiql: serverConfig.graphql.ide,
       pretty: serverConfig.graphql.pretty,
+      validationRules: [depthLimit(10)],
       context: {
         auth: {
           user: request.user,
