@@ -16,7 +16,7 @@ module.exports = {
         allowNull: false
       },
       language: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       description: {
         type: Sequelize.TEXT

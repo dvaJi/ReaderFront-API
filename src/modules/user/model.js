@@ -18,7 +18,19 @@ module.exports = function(sequelize, DataTypes) {
     activated: {
       type: DataTypes.BOOLEAN
     },
+    activatedToken: {
+      type: DataTypes.TEXT
+    },
     banned: {
+      type: DataTypes.BOOLEAN
+    },
+    bannedReason: {
+      type: DataTypes.TEXT
+    },
+    newPasswordToken: {
+      type: DataTypes.TEXT
+    },
+    newPasswordRequested: {
       type: DataTypes.BOOLEAN
     },
     lastIp: {

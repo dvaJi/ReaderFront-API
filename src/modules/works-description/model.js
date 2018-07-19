@@ -4,7 +4,7 @@
 export default function(sequelize, DataTypes) {
   let WorksDescription = sequelize.define('works_descriptions', {
     language: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
     },
     description: {
       type: DataTypes.TEXT

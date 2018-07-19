@@ -1,5 +1,5 @@
 // Imports
-import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLInt, GraphQLList } from 'graphql';
 
 // App Imports
 import { WorksDescriptionType } from './types';
@@ -10,7 +10,7 @@ export const worksDescriptionsByWork = {
   type: new GraphQLList(WorksDescriptionType),
   args: {
     workId: { type: GraphQLInt },
-    language: { type: GraphQLString }
+    language: { type: GraphQLInt }
   },
   resolve: getByWork
 };

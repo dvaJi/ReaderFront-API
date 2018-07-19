@@ -12,7 +12,7 @@ const WorksDescriptionType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLInt },
     work: { type: WorkType },
-    language: { type: GraphQLString },
+    language: { type: GraphQLInt },
     description: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString }
