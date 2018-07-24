@@ -11,6 +11,7 @@ import * as worksGenre from '../../modules/works-genre/mutations';
 import * as worksCover from '../../modules/works-cover/mutations';
 import * as people from '../../modules/people/mutations';
 import * as post from '../../modules/post/mutations';
+import * as preference from '../../modules/preferences/mutations';
 
 // Mutation
 const mutation = new GraphQLObjectType({
@@ -26,7 +27,8 @@ const mutation = new GraphQLObjectType({
     ...worksGenre,
     ...worksCover,
     ...people,
-    ...post
+    ...post,
+    ...preference
   }
 });
 

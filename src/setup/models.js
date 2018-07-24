@@ -16,7 +16,8 @@ const models = {
   WorksCovers: databaseConnection.import('../modules/works-cover/model'),
   Works: databaseConnection.import('../modules/works/model'),
   Chapter: databaseConnection.import('../modules/chapter/model'),
-  Post: databaseConnection.import('../modules/post/model')
+  Post: databaseConnection.import('../modules/post/model'),
+  Preference: databaseConnection.import('../modules/preferences/model')
 };
 
 Object.keys(models).forEach(modelName => {
