@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import serverConfig from '../../config/server';
 import params from '../../config/params';
 import models from '../../setup/models';
+import { sendActivateEmail } from '../../setup/email';
 
 // Create
 export async function create(parentValue, { name, email, password }) {
@@ -15,12 +16,30 @@ export async function create(parentValue, { name, email, password }) {
   if (!user) {
     // User does not exists
     const passwordHashed = await bcrypt.hash(password, serverConfig.saltRounds);
+    const lastLogin = new Date();
+    const activateToken = await bcrypt.hash(
+      email + lastLogin,
+      serverConfig.saltRounds
+    );
 
-    return await models.User.create({
+    const newUser = await models.User.create({
       name,
       email,
-      password: passwordHashed
+      password: passwordHashed,
+      activated: false,
+      activatedToken: activateToken,
+      lastLogin: lastLogin,
+      banned: false,
+      bannedReason: null
     });
+
+    await sendActivateEmail(
+      newUser.email,
+      newUser.name,
+      newUser.activatedToken
+    );
+
+    return newUser;
   } else {
     // User exists
     throw new Error(
