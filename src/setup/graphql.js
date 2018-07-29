@@ -25,7 +25,8 @@ export default function(server) {
         auth: {
           user: request.user,
           isAuthenticated: request.user && request.user.id > 0
-        }
+        },
+        clientIp: request.ip
       }
     }))
   );

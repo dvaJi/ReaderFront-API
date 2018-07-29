@@ -14,7 +14,11 @@
   "user": {
     "roles": {
       "admin": "ADMIN",
-      "user": "UsER"
+      "user": "USER",
+      "translator": "TRANSLATOR",
+      "typesetter": "TYPESETTER",
+      "redrawer": "REDRAWER",
+      "uploader": "UPLOADER"
     },
     "gender": {
       "male": {
