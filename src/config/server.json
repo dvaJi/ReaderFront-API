@@ -9,5 +9,12 @@
   },
   "upload": {
     "endpoint": "/works"
+  },
+  "email": {
+    "service": "gmail",
+    "auth": {
+      "user": "foroscript.69@gmail.com",
+      "pass": "tuxbpeeuuexwcxry"
+    }
   }
 }

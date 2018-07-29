@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLInt } from 'graphql';
 
 // App Imports
 import { UserType } from './types';
-import { create, remove } from './resolvers';
+import { create, remove, activate } from './resolvers';
 
 // Create
 export const userSignup = {
@@ -25,6 +25,23 @@ export const userSignup = {
     }
   },
   resolve: create
+};
+
+// Activate
+export const userActivate = {
+  type: UserType,
+  args: {
+    email: {
+      name: 'email',
+      type: GraphQLString
+    },
+
+    activatedToken: {
+      name: 'token',
+      type: GraphQLString
+    }
+  },
+  resolve: activate
 };
 
 // Remove
