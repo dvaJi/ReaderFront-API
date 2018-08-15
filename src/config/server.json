@@ -8,7 +8,7 @@
     "pretty": true
   },
   "upload": {
-    "endpoint": "/works"
+    "endpoint": "/uploads"
   },
   "email": {
     "service": "gmail",
