@@ -13,6 +13,24 @@ export async function getByWork(parentValue, { workId, language }) {
   });
 }
 
+// Create descriptions
+export async function createDescriptions(descriptions, workId) {
+  const descriptionsArray = JSON.parse(descriptions);
+  if (descriptionsArray !== undefined && workId !== undefined) {
+    await models.WorksDescription.destroy({ where: { workId: workId } });
+
+    await descriptionsArray.forEach(async desc => {
+      return await models.WorksDescription.create({
+        workId,
+        language: desc.language,
+        description: desc.description
+      });
+    });
+  } else {
+    throw new Error('Operation denied.');
+  }
+}
+
 // Create worksDescription
 export async function create(
   parentValue,

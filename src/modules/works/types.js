@@ -52,4 +52,17 @@ const WorksStatusType = new GraphQLObjectType({
   })
 });
 
-export { WorkType, WorksStatusType };
+// Works status type
+const WorkAggregatesType = new GraphQLObjectType({
+  name: 'workAggregatesType',
+  description: 'Work Aggregates Type',
+
+  fields: () => ({
+    count: { type: GraphQLInt },
+    sum: { type: GraphQLInt },
+    max: { type: GraphQLInt },
+    min: { type: GraphQLInt }
+  })
+});
+
+export { WorkType, WorksStatusType, WorkAggregatesType };

@@ -2,13 +2,14 @@
 import { GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 
 // App Imports
-import { WorkType, WorksStatusType } from './types';
+import { WorkType, WorksStatusType, WorkAggregatesType } from './types';
 import {
   getAll,
   getByStub,
   getById,
   getRandom,
-  getStatusTypes
+  getStatusTypes,
+  getAggregates
 } from './resolvers';
 
 // Works All
@@ -16,6 +17,7 @@ export const works = {
   type: new GraphQLList(WorkType),
   args: {
     orderBy: { type: GraphQLString },
+    sortBy: { type: GraphQLString },
     first: { type: GraphQLInt },
     offset: { type: GraphQLInt },
     language: { type: GraphQLInt }
@@ -56,4 +58,15 @@ export const workRandom = {
 export const workStatusTypes = {
   type: new GraphQLList(WorksStatusType),
   resolve: getStatusTypes
+};
+
+// Work Aggregates
+export const workAggregates = {
+  type: WorkAggregatesType,
+  args: {
+    aggregate: { type: GraphQLString },
+    aggregateColumn: { type: GraphQLString },
+    language: { type: GraphQLInt }
+  },
+  resolve: getAggregates
 };

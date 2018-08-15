@@ -1,14 +1,31 @@
+import uuidv1 from 'uuid/v1';
+import path from 'path';
+import { Sequelize } from 'sequelize';
 // App Imports
+import { createCover as createWorkCover } from '../works-cover/resolvers';
+import { createDescriptions } from '../works-description/resolvers';
+import { moveThumbnails } from '../../setup/thumbnails';
 import params from '../../config/params';
 import models from '../../setup/models';
 
 // Get all works
 export async function getAll(
   parentValue,
-  { language, orderBy, first, offset }
+  { language, orderBy, first, offset, sortBy }
 ) {
+  const descriptionJoin =
+    language !== -1
+      ? {
+          model: models.WorksDescription,
+          as: 'works_descriptions',
+          where: { language }
+        }
+      : {
+          model: models.WorksDescription,
+          as: 'works_descriptions'
+        };
   return await models.Works.findAll({
-    order: [['id', orderBy]],
+    order: [[sortBy, orderBy]],
     offset: offset,
     limit: first,
     include: [
@@ -17,11 +34,7 @@ export async function getAll(
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
-      {
-        model: models.WorksDescription,
-        as: 'works_descriptions',
-        where: { language }
-      },
+      descriptionJoin,
       {
         model: models.WorksCovers
       },
@@ -39,6 +52,17 @@ export async function getAll(
 
 // Get works by stub
 export async function getByStub(parentValue, { stub, language }) {
+  const descriptionJoin =
+    language !== -1
+      ? {
+          model: models.WorksDescription,
+          as: 'works_descriptions',
+          where: { language }
+        }
+      : {
+          model: models.WorksDescription,
+          as: 'works_descriptions'
+        };
   const works = await models.Works.findOne({
     where: { stub },
     include: [
@@ -47,11 +71,7 @@ export async function getByStub(parentValue, { stub, language }) {
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
-      {
-        model: models.WorksDescription,
-        as: 'works_descriptions',
-        where: { language }
-      },
+      descriptionJoin,
       {
         model: models.WorksCovers
       },
@@ -76,14 +96,21 @@ export async function getByStub(parentValue, { stub, language }) {
 
 // Get works by ID
 export async function getById(parentValue, { workId, language }) {
+  const descriptionJoin =
+    language !== -1
+      ? {
+          model: models.WorksDescription,
+          as: 'works_descriptions',
+          where: { language }
+        }
+      : {
+          model: models.WorksDescription,
+          as: 'works_descriptions'
+        };
   const works = await models.Works.findOne({
     where: { id: workId },
     include: [
-      {
-        model: models.WorksDescription,
-        as: 'works_descriptions',
-        where: { language }
-      },
+      descriptionJoin,
       {
         model: models.Chapter,
         as: 'chapters',
@@ -113,15 +140,22 @@ export async function getById(parentValue, { workId, language }) {
 
 // Get random work
 export async function getRandom(parentValue, { language }) {
+  const descriptionJoin =
+    language !== -1
+      ? {
+          model: models.WorksDescription,
+          as: 'works_descriptions',
+          where: { language }
+        }
+      : {
+          model: models.WorksDescription,
+          as: 'works_descriptions'
+        };
   return await models.Works.findOne({
     limit: 1,
     order: [[models.Sequelize.fn('RAND')]],
     include: [
-      {
-        model: models.WorksDescription,
-        as: 'works_descriptions',
-        where: { language }
-      },
+      descriptionJoin,
       {
         model: models.Chapter,
         as: 'chapters',
@@ -179,6 +213,58 @@ export async function create(
   }
 }
 
+// Create works with cover
+export async function createWithCover(
+  parentValue,
+  {
+    name,
+    stub,
+    type,
+    hidden,
+    demographicId,
+    status,
+    statusReason,
+    description,
+    adult,
+    visits,
+    cover,
+    works_descriptions
+  },
+  { auth }
+) {
+  if (auth.user && auth.user.role === params.user.roles.admin) {
+    const uniqid = uuidv1();
+    return await models.Works.create({
+      name,
+      stub,
+      uniqid,
+      type,
+      hidden,
+      demographicId,
+      status,
+      statusReason,
+      description,
+      adult,
+      visits
+    }).then(async work => {
+      const workdetails = await work.get();
+      const covers = createWorkCover(workdetails, cover);
+
+      const descriptions = createDescriptions(
+        works_descriptions,
+        workdetails.id
+      );
+
+      workdetails.works_descriptions = descriptions;
+      workdetails.work_covers = covers;
+
+      return workdetails;
+    });
+  } else {
+    throw new Error('Operation denied.');
+  }
+}
+
 // Update works
 export async function update(
   parentValue,
@@ -194,11 +280,14 @@ export async function update(
     statusReason,
     description,
     adult,
-    visits
+    visits,
+    cover,
+    works_descriptions
   },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    const oldWork = await models.Works.findOne({ where: { id } });
     return await models.Works.update(
       {
         name,
@@ -214,7 +303,52 @@ export async function update(
         visits
       },
       { where: { id } }
-    );
+    ).then(async () => {
+      const oldWorkDetail = oldWork.get();
+      const oldWorkDir = oldWorkDetail.stub + '_' + oldWorkDetail.uniqid;
+      const oldDir = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'public',
+        'works',
+        oldWorkDir
+      );
+      const workDir = stub + '_' + uniqid;
+      const newDir = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'public',
+        'works',
+        workDir
+      );
+
+      let isNewCover = false;
+      const oldCover = await models.WorksCovers.findOne({
+        where: {
+          workId: id,
+          coverTypeId: params.works.cover_type.small_thumb.id
+        }
+      });
+      const oldCoverDetail = oldCover.get();
+      isNewCover =
+        cover !==
+        oldCoverDetail.filename.replace(
+          params.works.cover_type.small_thumb.name,
+          ''
+        );
+      if (isNewCover && cover === null) {
+        await moveThumbnails(oldDir, newDir);
+      } else if (isNewCover) {
+        const newWork = await models.Works.findOne({ where: { id } });
+        await createWorkCover(newWork, cover);
+      }
+
+      await createDescriptions(works_descriptions, id);
+    });
   } else {
     throw new Error('Operation denied.');
   }
@@ -239,4 +373,41 @@ export async function remove(parentValue, { id }, { auth }) {
 // Works Status types
 export async function getStatusTypes() {
   return Object.values(params.works.status);
+}
+
+// Get all work aggregates
+export async function getAggregates(
+  parentValue,
+  { aggregate, aggregateColumn, language }
+) {
+  const descriptionJoin =
+    language !== -1
+      ? {
+          model: models.WorksDescription,
+          as: 'works_descriptions',
+          where: { language }
+        }
+      : {
+          model: models.WorksDescription,
+          as: 'works_descriptions'
+        };
+  let agg = 0;
+  await models.Works.findAll({
+    attributes: [
+      [
+        Sequelize.fn(aggregate, Sequelize.col('works.' + aggregateColumn)),
+        aggregate.toLowerCase()
+      ]
+    ],
+    include: [descriptionJoin]
+  }).then(async aggs => {
+    if (aggs.length > 0) {
+      agg = await aggs[0].get()[aggregate.toLowerCase()];
+    }
+  });
+
+  const result = {};
+  result[aggregate.toLowerCase()] = agg;
+
+  return result;
 }

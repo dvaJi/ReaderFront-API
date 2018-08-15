@@ -16,7 +16,7 @@ const connection = new Sequelize(
   {
     host: databaseConfigEnv.host,
     dialect: databaseConfigEnv.dialect,
-    logging: NODE_ENV === 'development' ? console.info : false,
+    //logging: NODE_ENV === 'development' ? console.info : false,
     operatorsAliases: Sequelize.Op
   }
 );
