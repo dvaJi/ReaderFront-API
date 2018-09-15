@@ -3,7 +3,7 @@ import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 // App Imports
 import { ChapterType } from './types';
-import { getAll, getByWork } from './resolvers';
+import { getAll, getByWork, getById } from './resolvers';
 
 // Chapters All
 export const chapters = {
@@ -25,4 +25,13 @@ export const chaptersByWork = {
     language: { type: GraphQLInt }
   },
   resolve: getByWork
+};
+
+// Chapter By ID
+export const chapterById = {
+  type: ChapterType,
+  args: {
+    id: { type: GraphQLInt }
+  },
+  resolve: getById
 };

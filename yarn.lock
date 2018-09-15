@@ -2858,11 +2858,11 @@ graphql-tools@^3.1.1:
     iterall "^1.1.3"
     uuid "^3.1.0"
 
-graphql@^0.13.2:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.13.2.tgz#4c740ae3c222823e7004096f832e7b93b2108270"
+graphql@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.0.0.tgz#4ee771c5266d08cb75df2d3ac41e8dd51ce3d599"
   dependencies:
-    iterall "^1.2.1"
+    iterall "^1.2.2"
 
 growly@^1.3.0:
   version "1.3.0"
@@ -3451,7 +3451,7 @@ istanbul-reports@^1.3.0:
   dependencies:
     handlebars "^4.0.3"
 
-iterall@^1.1.3, iterall@^1.2.1:
+iterall@^1.1.3, iterall@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.2.2.tgz#92d70deb8028e0c39ff3164fdbf4d8b088130cd7"
 
@@ -3742,7 +3742,7 @@ jest-worker@^23.2.0:
   dependencies:
     merge-stream "^1.0.1"
 
-jest@^23.4.0:
+jest@^23.5.0:
   version "23.5.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-23.5.0.tgz#80de353d156ea5ea4a7332f7962ac79135fbc62e"
   dependencies:
@@ -4389,9 +4389,13 @@ named-placeholders@1.1.1:
   dependencies:
     lru-cache "2.5.0"
 
-nan@2.10.0, nan@^2.10.0, nan@^2.9.2:
+nan@2.10.0, nan@^2.9.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
+
+nan@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -4486,9 +4490,9 @@ nodemailer@^4.6.8:
   version "4.6.8"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.8.tgz#f82fb407828bf2e76d92acc34b823d83e774f89c"
 
-nodemon@~1.18.1:
-  version "1.18.3"
-  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.18.3.tgz#46e681ee0dd1b590562e03019b4c5df234f906f9"
+nodemon@~1.18.4:
+  version "1.18.4"
+  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.18.4.tgz#873f65fdb53220eb166180cf106b1354ac5d714d"
   dependencies:
     chokidar "^2.0.2"
     debug "^3.1.0"
@@ -4901,7 +4905,7 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@^1.13.7:
+prettier@^1.14.2:
   version "1.14.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
 
@@ -5420,6 +5424,10 @@ semver-diff@^2.0.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
+semver@^5.5.1:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.1.tgz#7dfdd8814bdb7cabc7be0fb1d734cfb66c940477"
+
 send@0.15.6:
   version "0.15.6"
   resolved "https://registry.yarnpkg.com/send/-/send-0.15.6.tgz#20f23a9c925b762ab82705fe2f9db252ace47e34"
@@ -5442,9 +5450,9 @@ seq-queue@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/seq-queue/-/seq-queue-0.0.5.tgz#d56812e1c017a6e4e7c3e3a37a1da6d78dd3c93e"
 
-sequelize-cli@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/sequelize-cli/-/sequelize-cli-4.0.0.tgz#4d641dfb58b0370ab440f737e1b0bf737f15eca5"
+sequelize-cli@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/sequelize-cli/-/sequelize-cli-4.1.1.tgz#3cc75609c10262355be02f80535b7860f828ce03"
   dependencies:
     bluebird "^3.5.1"
     cli-color "^1.2.0"
@@ -5548,19 +5556,19 @@ setprototypeof@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.0.tgz#d0bd85536887b6fe7c0d818cb962d9d91c54e656"
 
-sharp@^0.20.5:
-  version "0.20.5"
-  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.20.5.tgz#fc19d9639b1c792fa68a21624c75069923e79edd"
+sharp@^0.20.8:
+  version "0.20.8"
+  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.20.8.tgz#e853f10b53b730824f0c3c5e453c79fa0812a48b"
   dependencies:
     color "^3.0.0"
     detect-libc "^1.0.3"
     fs-copy-file-sync "^1.1.1"
-    nan "^2.10.0"
+    nan "^2.11.0"
     npmlog "^4.1.2"
     prebuild-install "^4.0.0"
-    semver "^5.5.0"
+    semver "^5.5.1"
     simple-get "^2.8.1"
-    tar "^4.4.4"
+    tar "^4.4.6"
     tunnel-agent "^0.6.0"
 
 shebang-command@^1.2.0:
@@ -5946,7 +5954,7 @@ tar-stream@^1.1.2:
     to-buffer "^1.1.0"
     xtend "^4.0.0"
 
-tar@^4, tar@^4.4.4:
+tar@^4, tar@^4.4.6:
   version "4.4.6"
   resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.6.tgz#63110f09c00b4e60ac8bcfe1bf3c8660235fbc9b"
   dependencies:
