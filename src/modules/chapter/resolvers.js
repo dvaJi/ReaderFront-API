@@ -1,4 +1,6 @@
 // App Imports
+import { removeTempImage, createThumbnail } from '../../setup/thumbnails';
+import { generateChapterDir } from '../../setup/utils';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -7,11 +9,15 @@ export async function getAll(
   parentValue,
   { language, orderBy, first, offset }
 ) {
+  const langWhere =
+    language !== -1
+      ? {
+          where: { language }
+        }
+      : {};
   return await models.Chapter.findAll({
-    where: {
-      language
-    },
-    order: [['id', orderBy]],
+    langWhere,
+    order: [['id', orderBy], [models.Page, 'filename']],
     include: [
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
@@ -23,14 +29,31 @@ export async function getAll(
 
 // Get chapter by work
 export async function getByWork(parentValue, { workStub, language }) {
+  const langWhere =
+    language !== -1
+      ? {
+          where: { language }
+        }
+      : {};
   return await models.Chapter.findAll({
-    where: {
-      language
-    },
+    langWhere,
     include: [
       { model: models.Works, as: 'work', where: { stub: workStub } },
       { model: models.Page, as: 'pages' }
-    ]
+    ],
+    order: [[models.Page, 'filename']]
+  });
+}
+
+// Get chapter by id
+export async function getById(parentValue, { id }) {
+  return await models.Chapter.findOne({
+    where: { id },
+    include: [
+      { model: models.Works, as: 'work' },
+      { model: models.Page, as: 'pages' }
+    ],
+    order: [[models.Page, 'filename']]
   });
 }
 
@@ -103,6 +126,44 @@ export async function update(
         uniqid,
         hidden,
         description,
+        thumbnail
+      },
+      { where: { id } }
+    );
+  } else {
+    throw new Error('Operation denied.');
+  }
+}
+
+// Update chapter
+export async function updateThumb(parentValue, { id, thumbnail }, { auth }) {
+  if (auth.user && auth.user.role === params.user.roles.admin) {
+    const chapter = await models.Chapter.findOne({
+      where: { id },
+      include: [{ model: models.Works, as: 'work' }]
+    });
+    const chapterDetail = await chapter.get();
+    const coversTypes = Object.keys(params.works.cover_type)
+      .filter(c => c !== 'portrait')
+      .map(c => params.works.cover_type[c]);
+
+    // delete old thumbnails
+    if (chapterDetail.thumbnail !== null) {
+      await coversTypes.forEach(async coverType => {
+        const thumb = coverType.name + '_' + chapterDetail.thumbnail;
+        const oldThumbPath = generateChapterDir(chapter, chapter.work, thumb);
+        await removeTempImage(oldThumbPath);
+      });
+    }
+
+    // Create new thumbs
+    const chapterPath = generateChapterDir(chapter, chapter.work);
+    await coversTypes.forEach(async coverType => {
+      await createThumbnail(thumbnail, chapterPath, chapterPath, coverType);
+    });
+
+    return await models.Chapter.update(
+      {
         thumbnail
       },
       { where: { id } }

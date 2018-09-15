@@ -27,6 +27,9 @@ module.exports = function(sequelize, DataTypes) {
     hidden: {
       type: DataTypes.BOOLEAN
     },
+    notShowAtStart: {
+      type: DataTypes.BOOLEAN
+    },
     description: {
       type: DataTypes.TEXT
     },

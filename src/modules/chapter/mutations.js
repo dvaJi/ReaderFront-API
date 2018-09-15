@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
 
 // App Imports
 import { ChapterType } from './types';
-import { create, update, remove } from './resolvers';
+import { create, update, updateThumb, remove } from './resolvers';
 
 // Chapter create
 export const chapterCreate = {
@@ -51,6 +51,11 @@ export const chapterCreate = {
 
     hidden: {
       name: 'hidden',
+      type: GraphQLBoolean
+    },
+
+    notShowAtStart: {
+      name: 'notShowAtStart',
       type: GraphQLBoolean
     },
 
@@ -121,6 +126,11 @@ export const chapterUpdate = {
       type: GraphQLBoolean
     },
 
+    notShowAtStart: {
+      name: 'notShowAtStart',
+      type: GraphQLBoolean
+    },
+
     description: {
       name: 'description',
       type: GraphQLString
@@ -132,6 +142,23 @@ export const chapterUpdate = {
     }
   },
   resolve: update
+};
+
+// Chapter update
+export const chapterThumbUpdate = {
+  type: ChapterType,
+  args: {
+    id: {
+      name: 'id',
+      type: GraphQLInt
+    },
+
+    thumbnail: {
+      name: 'thumbnail',
+      type: GraphQLString
+    }
+  },
+  resolve: updateThumb
 };
 
 // Chapter remove
