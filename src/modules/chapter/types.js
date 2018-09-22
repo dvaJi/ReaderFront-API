@@ -28,7 +28,6 @@ const ChapterType = new GraphQLObjectType({
     stub: { type: GraphQLString },
     uniqid: { type: GraphQLString },
     hidden: { type: GraphQLBoolean },
-    notShowAtStart: { type: GraphQLBoolean },
     description: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
     createdAt: { type: GraphQLString },

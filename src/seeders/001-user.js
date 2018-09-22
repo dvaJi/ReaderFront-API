@@ -1,6 +1,6 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const config = require('../config/server.json');
 const params = require('../config/params.json');
 
