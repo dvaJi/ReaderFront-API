@@ -54,11 +54,6 @@ export const chapterCreate = {
       type: GraphQLBoolean
     },
 
-    notShowAtStart: {
-      name: 'notShowAtStart',
-      type: GraphQLBoolean
-    },
-
     description: {
       name: 'description',
       type: GraphQLString
@@ -123,11 +118,6 @@ export const chapterUpdate = {
 
     hidden: {
       name: 'hidden',
-      type: GraphQLBoolean
-    },
-
-    notShowAtStart: {
-      name: 'notShowAtStart',
       type: GraphQLBoolean
     },
 

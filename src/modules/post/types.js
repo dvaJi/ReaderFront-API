@@ -32,4 +32,17 @@ const PostType = new GraphQLObjectType({
   })
 });
 
-export { PostType };
+// Posts status type
+const PostsAggregatesType = new GraphQLObjectType({
+  name: 'postAggregatesType',
+  description: 'Post Aggregates Type',
+
+  fields: () => ({
+    count: { type: GraphQLInt },
+    sum: { type: GraphQLInt },
+    max: { type: GraphQLInt },
+    min: { type: GraphQLInt }
+  })
+});
+
+export { PostType, PostsAggregatesType };
