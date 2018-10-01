@@ -39,7 +39,7 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
-      - run: yarn build
+      - run: yarn build:prod
       - run:
           name: Deploy to beta.ravens-scans.com
           command: |
