@@ -40,6 +40,9 @@ module.exports = {
       adult: {
         type: Sequelize.BOOLEAN
       },
+      thumbnail: {
+        type: Sequelize.STRING
+      },
       visits: {
         type: Sequelize.INTEGER
       },

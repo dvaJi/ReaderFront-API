@@ -4,6 +4,7 @@ import multer from 'multer';
 
 // App Imports
 import serverConfig from '../config/server.json';
+import { sanitizeFilename } from './utils';
 
 // File upload configurations and route
 export default function(server) {
@@ -21,7 +22,7 @@ export default function(server) {
     ),
 
     filename: function(request, file, callback) {
-      callback(null, file.originalname);
+      callback(null, sanitizeFilename(file.originalname));
     }
   });
 
