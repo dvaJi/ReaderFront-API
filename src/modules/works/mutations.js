@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
 
 // App Imports
 import { WorkType } from './types';
-import { create, createWithCover, update, remove } from './resolvers';
+import { create, update, remove } from './resolvers';
 
 // Work create
 export const workCreate = {
@@ -19,63 +19,6 @@ export const workCreate = {
       type: GraphQLString
     },
 
-    uniqid: {
-      name: 'uniqid',
-      type: GraphQLString
-    },
-
-    type: {
-      name: 'type',
-      type: GraphQLString
-    },
-
-    hidden: {
-      name: 'hidden',
-      type: GraphQLBoolean
-    },
-
-    demographicId: {
-      name: 'demographicId',
-      type: GraphQLInt
-    },
-
-    status: {
-      name: 'status',
-      type: GraphQLInt
-    },
-
-    statusReason: {
-      name: 'statusReason',
-      type: GraphQLString
-    },
-
-    adult: {
-      name: 'adult',
-      type: GraphQLBoolean
-    },
-
-    visits: {
-      name: 'visits',
-      type: GraphQLInt
-    }
-  },
-  resolve: create
-};
-
-// Work with Cover create
-export const workWithCoverCreate = {
-  type: WorkType,
-  args: {
-    name: {
-      name: 'name',
-      type: GraphQLString
-    },
-
-    stub: {
-      name: 'stub',
-      type: GraphQLString
-    },
-
     type: {
       name: 'type',
       type: GraphQLString
@@ -111,8 +54,8 @@ export const workWithCoverCreate = {
       type: GraphQLInt
     },
 
-    cover: {
-      name: 'cover',
+    thumbnail: {
+      name: 'thumbnail',
       type: GraphQLString
     },
 
@@ -121,7 +64,7 @@ export const workWithCoverCreate = {
       type: GraphQLString
     }
   },
-  resolve: createWithCover
+  resolve: create
 };
 
 // Work update

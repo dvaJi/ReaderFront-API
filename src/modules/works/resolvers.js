@@ -1,10 +1,15 @@
 import uuidv1 from 'uuid/v1';
 import path from 'path';
 import { Sequelize } from 'sequelize';
+
 // App Imports
-import { createCover as createWorkCover } from '../works-cover/resolvers';
+import {
+  moveThumbnails,
+  moveImage,
+  createThumbnail,
+  removeTempImage
+} from '../../setup/thumbnails';
 import { createDescriptions } from '../works-description/resolvers';
-import { moveThumbnails } from '../../setup/thumbnails';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -35,9 +40,6 @@ export async function getAll(
         include: [{ model: models.Page, as: 'pages' }]
       },
       descriptionJoin,
-      {
-        model: models.WorksCovers
-      },
       {
         model: models.WorksGenres
       },
@@ -72,9 +74,6 @@ export async function getByStub(parentValue, { stub, language }) {
         include: [{ model: models.Page, as: 'pages' }]
       },
       descriptionJoin,
-      {
-        model: models.WorksCovers
-      },
       {
         model: models.WorksGenres
       },
@@ -115,9 +114,6 @@ export async function getById(parentValue, { workId, language }) {
         model: models.Chapter,
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
-      },
-      {
-        model: models.WorksCovers
       },
       {
         model: models.WorksGenres
@@ -162,9 +158,6 @@ export async function getRandom(parentValue, { language }) {
         include: [{ model: models.Page, as: 'pages' }]
       },
       {
-        model: models.WorksCovers
-      },
-      {
         model: models.WorksGenres
       },
       {
@@ -176,45 +169,8 @@ export async function getRandom(parentValue, { language }) {
   });
 }
 
-// Create works
-export async function create(
-  parentValue,
-  {
-    name,
-    stub,
-    uniqid,
-    type,
-    hidden,
-    demographicId,
-    status,
-    statusReason,
-    description,
-    adult,
-    visits
-  },
-  { auth }
-) {
-  if (auth.user && auth.user.role === params.user.roles.admin) {
-    return await models.Works.create({
-      name,
-      stub,
-      uniqid,
-      type,
-      hidden,
-      demographicId,
-      status,
-      statusReason,
-      description,
-      adult,
-      visits
-    });
-  } else {
-    throw new Error('Operation denied.');
-  }
-}
-
 // Create works with cover
-export async function createWithCover(
+export async function create(
   parentValue,
   {
     name,
@@ -227,7 +183,7 @@ export async function createWithCover(
     description,
     adult,
     visits,
-    cover,
+    thumbnail,
     works_descriptions
   },
   { auth }
@@ -245,10 +201,11 @@ export async function createWithCover(
       statusReason,
       description,
       adult,
+      thumbnail,
       visits
     }).then(async work => {
       const workdetails = await work.get();
-      const covers = createWorkCover(workdetails, cover);
+      const covers = createWorkCover(workdetails, thumbnail);
 
       const descriptions = createDescriptions(
         works_descriptions,
@@ -281,7 +238,7 @@ export async function update(
     description,
     adult,
     visits,
-    cover,
+    thumbnail,
     works_descriptions
   },
   { auth }
@@ -300,6 +257,7 @@ export async function update(
         statusReason,
         description,
         adult,
+        thumbnail,
         visits
       },
       { where: { id } }
@@ -326,25 +284,12 @@ export async function update(
         workDir
       );
 
-      let isNewCover = false;
-      const oldCover = await models.WorksCovers.findOne({
-        where: {
-          workId: id,
-          coverTypeId: params.works.cover_type.small_thumb.id
-        }
-      });
-      const oldCoverDetail = oldCover.get();
-      isNewCover =
-        cover !==
-        oldCoverDetail.filename.replace(
-          params.works.cover_type.small_thumb.name,
-          ''
-        );
-      if (isNewCover && cover === null) {
+      let isNewCover = thumbnail !== oldWorkDetail.thumbnail;
+      if (isNewCover && thumbnail === null) {
         await moveThumbnails(oldDir, newDir);
       } else if (isNewCover) {
         const newWork = await models.Works.findOne({ where: { id } });
-        await createWorkCover(newWork, cover);
+        await createWorkCover(newWork, thumbnail);
       }
 
       await createDescriptions(works_descriptions, id);
@@ -363,6 +308,8 @@ export async function remove(parentValue, { id }, { auth }) {
       // Works does not exists
       throw new Error('The works does not exists.');
     } else {
+      // TODO: Chapters should be deleted too (along with pages)
+      await models.WorksDescription.destroy({ where: { workId: id } });
       return await models.Works.destroy({ where: { id } });
     }
   } else {
@@ -410,4 +357,47 @@ export async function getAggregates(
   result[aggregate.toLowerCase()] = agg;
 
   return result;
+}
+
+export async function createWorkCover(work, filename) {
+  const workDir = work.stub + '_' + work.uniqid;
+  const tempDir = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    'public',
+    'images',
+    'uploads'
+  );
+  const newDir = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    'public',
+    'works',
+    workDir
+  );
+
+  await moveImage(tempDir, newDir, filename);
+
+  const coversTypes = Object.keys(params.works.cover_type)
+    .filter(c => c !== 'portrait')
+    .map(c => params.works.cover_type[c]);
+
+  for (const coverType of coversTypes) {
+    await createThumbnail(filename, newDir, coverType, false);
+    await createThumbnail(
+      coverType.name + '_' + filename,
+      newDir,
+      coverType,
+      true
+    );
+  }
+
+  // Delete temp image
+  await removeTempImage(path.join(tempDir, filename));
+
+  return coversTypes;
 }

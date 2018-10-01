@@ -13,7 +13,6 @@ const models = {
   WorksDescription: databaseConnection.import(
     '../modules/works-description/model'
   ),
-  WorksCovers: databaseConnection.import('../modules/works-cover/model'),
   Works: databaseConnection.import('../modules/works/model'),
   Chapter: databaseConnection.import('../modules/chapter/model'),
   Post: databaseConnection.import('../modules/post/model'),

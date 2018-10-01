@@ -159,7 +159,8 @@ export async function updateThumb(parentValue, { id, thumbnail }, { auth }) {
     // Create new thumbs
     const chapterPath = generateChapterDir(chapter, chapter.work);
     await coversTypes.forEach(async coverType => {
-      await createThumbnail(thumbnail, chapterPath, chapterPath, coverType);
+      await createThumbnail(thumbnail, chapterPath, coverType, false);
+      await createThumbnail(thumbnail, chapterPath, coverType, true);
     });
 
     return await models.Chapter.update(

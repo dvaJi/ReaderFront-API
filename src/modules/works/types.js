@@ -10,7 +10,6 @@ import {
 // App Imports
 import { ChapterType } from '../chapter/types';
 import { WorksDescriptionType } from '../works-description/types';
-import { WorksCoverType } from '../works-cover/types';
 import { WorksGenreType } from '../works-genre/types';
 import { PeopleWorksType } from '../people-works/types';
 
@@ -23,7 +22,6 @@ const WorkType = new GraphQLObjectType({
     id: { type: GraphQLInt },
     chapters: { type: new GraphQLList(ChapterType) },
     works_descriptions: { type: new GraphQLList(WorksDescriptionType) },
-    works_covers: { type: new GraphQLList(WorksCoverType) },
     works_genres: { type: new GraphQLList(WorksGenreType) },
     people_works: { type: new GraphQLList(PeopleWorksType) },
     name: { type: GraphQLString },
@@ -36,6 +34,7 @@ const WorkType = new GraphQLObjectType({
     statusReason: { type: GraphQLString },
     adult: { type: GraphQLBoolean },
     visits: { type: GraphQLInt },
+    thumbnail: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString }
   })

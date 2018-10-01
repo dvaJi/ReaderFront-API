@@ -30,6 +30,9 @@ module.exports = function(sequelize, DataTypes) {
     adult: {
       type: DataTypes.BOOLEAN
     },
+    thumbnail: {
+      type: DataTypes.STRING
+    },
     visits: {
       type: DataTypes.INTEGER
     }
@@ -39,7 +42,6 @@ module.exports = function(sequelize, DataTypes) {
     Works.hasMany(models.Chapter);
     Works.hasMany(models.WorksDescription);
     Works.hasMany(models.PeopleWorks);
-    Works.hasMany(models.WorksCovers);
     Works.hasMany(models.WorksGenres);
   };
 

@@ -18,6 +18,7 @@ module.exports = {
           statusReason: null,
           adult: false,
           visits: 1000,
+          thumbnail: null,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -32,6 +33,7 @@ module.exports = {
           statusReason: null,
           adult: false,
           visits: 5000,
+          thumbnail: 'file-1534697328471.png',
           createdAt: new Date(),
           updatedAt: new Date()
         }

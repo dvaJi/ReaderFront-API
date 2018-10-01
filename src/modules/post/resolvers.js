@@ -3,7 +3,11 @@ import path from 'path';
 import uuidv1 from 'uuid/v1';
 
 // App Imports
-import { moveImage, removeTempImage } from '../../setup/thumbnails';
+import {
+  moveImage,
+  removeTempImage,
+  createThumbnail
+} from '../../setup/thumbnails';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -92,6 +96,15 @@ export async function create(
       );
 
       await moveImage(tempDir, newDir, thumbnail);
+
+      const coversTypes = Object.keys(params.works.cover_type)
+        .filter(c => c !== 'portrait')
+        .map(c => params.works.cover_type[c]);
+
+      for (const coverType of coversTypes) {
+        await createThumbnail(thumbnail, newDir, coverType, false);
+        await createThumbnail(thumbnail, newDir, coverType, true);
+      }
     }
     return await models.Post.create({
       userId,
