@@ -13,8 +13,8 @@
   "email": {
     "service": "gmail",
     "auth": {
-      "user": "foroscript.69@gmail.com",
-      "pass": "tuxbpeeuuexwcxry"
+      "user": "YOUR_EMAIL",
+      "pass": "PASS"
     }
   }
 }
