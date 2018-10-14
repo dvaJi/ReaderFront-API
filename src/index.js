@@ -7,6 +7,7 @@ import setupGraphQL from './setup/graphql';
 import setupUpload from './setup/upload';
 import setupThumbnails from './setup/generate-thumbnails';
 import setupStartServer from './setup/start-server';
+import setupDownloads from './setup/download-archive';
 
 // Create express server
 const server = express();
@@ -19,6 +20,9 @@ setupUpload(server);
 
 // Setup thumbnails generator
 setupThumbnails(server);
+
+// Setup downloads
+setupDownloads(server);
 
 // Setup GraphQL
 setupGraphQL(server);
