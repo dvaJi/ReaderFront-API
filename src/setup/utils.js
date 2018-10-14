@@ -1,7 +1,7 @@
 import path from 'path';
 
 /**
- * Generate a path of a chapter
+ * Generate a path of a chapter, if filename is undefined it will return only the directory
  * @param {*} chapter
  * @param {*} work
  * @param {*} filename Optional

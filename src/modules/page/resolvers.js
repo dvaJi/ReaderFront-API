@@ -141,6 +141,14 @@ export async function remove(parentValue, { id }, { auth }) {
   }
 }
 
+export async function getLatestPage(chapterId) {
+  return await models.Page.findOne({
+    where: { chapterId },
+    limit: 1,
+    order: [['createdAt', 'DESC']]
+  });
+}
+
 // Page types
 export async function getTypes() {
   return Object.values(params.page.types);
