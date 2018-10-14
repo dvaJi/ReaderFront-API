@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLBoolean
 } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { ChapterType } from '../chapter/types';
@@ -23,8 +24,8 @@ const PageType = new GraphQLObjectType({
     width: { type: GraphQLInt },
     size: { type: GraphQLInt },
     mime: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 

@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { WorkType } from '../works/types';
@@ -13,8 +14,8 @@ const WorksGenreType = new GraphQLObjectType({
     id: { type: GraphQLInt },
     work: { type: WorkType },
     genreId: { type: GraphQLInt },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 

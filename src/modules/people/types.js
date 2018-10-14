@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { PeopleWorksType } from '../people-works/types';
@@ -29,8 +30,8 @@ const PeopleType = new GraphQLObjectType({
     },
     twitter: { type: GraphQLString, description: 'Twitter username' },
     thumbnail: { type: GraphQLString, description: 'Thumbnail filename' },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString },
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate },
     people_works: {
       type: new GraphQLList(PeopleWorksType),
       description: 'The works of the person'

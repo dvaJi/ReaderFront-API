@@ -6,6 +6,7 @@ import {
   GraphQLInt,
   GraphQLBoolean
 } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { WorkType } from '../works/types';
@@ -30,8 +31,8 @@ const ChapterType = new GraphQLObjectType({
     hidden: { type: GraphQLBoolean },
     description: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 

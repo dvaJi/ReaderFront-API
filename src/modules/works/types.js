@@ -6,6 +6,7 @@ import {
   GraphQLInt,
   GraphQLBoolean
 } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { ChapterType } from '../chapter/types';
@@ -35,8 +36,8 @@ const WorkType = new GraphQLObjectType({
     adult: { type: GraphQLBoolean },
     visits: { type: GraphQLInt },
     thumbnail: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 
