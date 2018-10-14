@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLBoolean
 } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // App Imports
 import { UserType } from '../user/types';
@@ -27,8 +28,8 @@ const PostType = new GraphQLObjectType({
     sticky: { type: GraphQLBoolean },
     language: { type: GraphQLInt },
     thumbnail: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 

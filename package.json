@@ -60,6 +60,7 @@
     "express-graphql": "^0.6.12",
     "fs-extra": "^7.0.0",
     "graphql": "^14.0.2",
+    "graphql-date": "^1.0.3",
     "graphql-depth-limit": "^1.1.0",
     "graphql-tools": "^3.1.1",
     "jsonwebtoken": "^8.3.0",

@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import GraphQLDate from 'graphql-date';
 
 // Preference type
 const PreferenceType = new GraphQLObjectType({
@@ -11,8 +12,8 @@ const PreferenceType = new GraphQLObjectType({
     name: { type: GraphQLString },
     value: { type: GraphQLString },
     group: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    createdAt: { type: GraphQLDate },
+    updatedAt: { type: GraphQLDate }
   })
 });
 
