@@ -22,8 +22,8 @@ export async function getAll(
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
     ],
-    offset: offset,
-    limit: first
+    offset: offset ? offset : 0,
+    limit: first ? first : 10
   });
 }
 

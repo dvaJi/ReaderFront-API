@@ -19,14 +19,14 @@ module.exports = {
       },
       {
         name: 'api_url',
-        value: 'http://localhost:8000/',
+        value: 'localhost:8000',
         group: 'general',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         name: 'frontend_url',
-        value: 'http://localhost:3000/',
+        value: 'localhost:3000',
         group: 'general',
         createdAt: new Date(),
         updatedAt: new Date()
