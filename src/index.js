@@ -8,6 +8,7 @@ import setupUpload from './setup/upload';
 import setupThumbnails from './setup/generate-thumbnails';
 import setupStartServer from './setup/start-server';
 import setupDownloads from './setup/download-archive';
+import setupRSS from './setup/start-rss';
 
 // Create express server
 const server = express();
@@ -23,6 +24,8 @@ setupThumbnails(server);
 
 // Setup downloads
 setupDownloads(server);
+
+setupRSS(server);
 
 // Setup GraphQL
 setupGraphQL(server);

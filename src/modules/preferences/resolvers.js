@@ -15,6 +15,15 @@ export async function getByGroup(parentValue, { group }) {
   });
 }
 
+// Get preference by name
+export async function getByName(parentValue, { name }) {
+  return await models.Preference.findAll({
+    where: {
+      name
+    }
+  });
+}
+
 // Update preference
 export async function update(parentValue, { id, value }, { auth }) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
