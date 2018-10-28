@@ -1,5 +1,12 @@
+import uuidv1 from 'uuid/v1';
+
 // App Imports
-import { removeTempImage, createThumbnail } from '../../setup/thumbnails';
+import {
+  removeTempImage,
+  createThumbnail,
+  moveThumbnails,
+  getThumbPath
+} from '../../setup/thumbnails';
 import { generateChapterDir } from '../../setup/utils';
 import params from '../../config/params';
 import models from '../../setup/models';
@@ -79,6 +86,7 @@ export async function create(
   if (auth.user && auth.user.role === params.user.roles.admin) {
     if (releaseDate === null) {
       releaseDate = new Date();
+      uniqid = uuidv1();
     }
     return await models.Chapter.create({
       workId,
@@ -120,6 +128,32 @@ export async function update(
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    const chapterObj = await models.Chapter.findOne({
+      where: { id },
+      include: [{ model: models.Works, as: 'work' }]
+    });
+    const chapterDetail = await chapterObj.get();
+    // Check if pages need to be moved
+    if (
+      chapter !== chapterDetail.chapter ||
+      subchapter !== chapterDetail.subchapter ||
+      stub !== chapterDetail.stub
+    ) {
+      const oldDir = await chapterDir(chapterDetail);
+      const oldPath = await getThumbPath('chapter', oldDir);
+      const newDir = await chapterDir({
+        chapter,
+        subchapter,
+        stub,
+        uniqid,
+        work: {
+          stub: chapterDetail.work.stub,
+          uniqid: chapterDetail.work.uniqid
+        }
+      });
+      const newPath = await getThumbPath('chapter', newDir);
+      await moveThumbnails(oldPath, newPath);
+    }
     return await models.Chapter.update(
       {
         workId,
@@ -200,4 +234,10 @@ export async function remove(parentValue, { id }, { auth }) {
 // Chapter types
 export async function getTypes() {
   return Object.values(params.chapter.types);
+}
+
+function chapterDir(chapter) {
+  return `${chapter.work.stub}_${chapter.work.uniqid}/${chapter.chapter}-${
+    chapter.subchapter
+  }_${chapter.stub}_${chapter.uniqid}`;
 }

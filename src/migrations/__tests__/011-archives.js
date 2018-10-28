@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 import { createQueryInterfaceMock, field } from 'sequelize-test-utils';
-import { up, down } from '../004-archives';
+import { up, down } from '../011-archives';
 
 describe('#up', () => {
   it('creates archives table', () => {
