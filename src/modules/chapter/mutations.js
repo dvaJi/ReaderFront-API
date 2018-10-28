@@ -62,6 +62,11 @@ export const chapterCreate = {
     thumbnail: {
       name: 'thumbnail',
       type: GraphQLString
+    },
+
+    releaseDate: {
+      name: 'releaseDate',
+      type: GraphQLString
     }
   },
   resolve: create
@@ -128,6 +133,11 @@ export const chapterUpdate = {
 
     thumbnail: {
       name: 'thumbnail',
+      type: GraphQLString
+    },
+
+    releaseDate: {
+      name: 'releaseDate',
       type: GraphQLString
     }
   },

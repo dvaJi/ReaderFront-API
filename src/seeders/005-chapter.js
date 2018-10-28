@@ -19,6 +19,7 @@ module.exports = {
           hidden: false,
           description: null,
           thumbnail: 'thumb_ch1.png',
+          releaseDate: new Date(),
           createdAt: new Date(),
           updatedAt: new Date()
         }

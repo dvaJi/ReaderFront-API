@@ -16,8 +16,8 @@ export async function getAll(
         }
       : {};
   return await models.Chapter.findAll({
-    langWhere,
-    order: [['id', orderBy], [models.Page, 'filename']],
+    ...langWhere,
+    order: [['releaseDate', orderBy], [models.Page, 'filename']],
     include: [
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
@@ -71,11 +71,15 @@ export async function create(
     uniqid,
     hidden,
     description,
-    thumbnail
+    thumbnail,
+    releaseDate
   },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    if (releaseDate === null) {
+      releaseDate = new Date();
+    }
     return await models.Chapter.create({
       workId,
       chapter,
@@ -87,7 +91,8 @@ export async function create(
       uniqid,
       hidden,
       description,
-      thumbnail
+      thumbnail,
+      releaseDate
     });
   } else {
     throw new Error('Operation denied.');
@@ -109,7 +114,8 @@ export async function update(
     uniqid,
     hidden,
     description,
-    thumbnail
+    thumbnail,
+    releaseDate
   },
   { auth }
 ) {
@@ -126,7 +132,8 @@ export async function update(
         uniqid,
         hidden,
         description,
-        thumbnail
+        thumbnail,
+        releaseDate
       },
       { where: { id } }
     );

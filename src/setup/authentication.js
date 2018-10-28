@@ -1,6 +1,6 @@
 // Imports
 import jwt from 'jsonwebtoken';
-import serverConfig from '../config/server.json';
+import { SECRET_KEY } from '../config/env';
 
 // Authentication middleware
 export default function(request, response, next) {
@@ -9,7 +9,7 @@ export default function(request, response, next) {
   if (authToken && authToken !== null) {
     try {
       const token = authToken.split(' ');
-      request.user = jwt.verify(token[1], serverConfig.secret);
+      request.user = jwt.verify(token[1], SECRET_KEY);
     } catch (e) {
       console.warn('Invalid token detected.');
     }
