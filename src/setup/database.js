@@ -2,24 +2,21 @@
 import { Sequelize } from 'sequelize';
 
 // App Imports
-import { NODE_ENV } from '../config/env';
-import databaseConfig from '../config/database.json';
-
-// Load database config
-const databaseConfigEnv = databaseConfig[NODE_ENV];
+import {
+  DB_DIALECT,
+  DB_HOSTNAME,
+  DB_NAME,
+  DB_PASS,
+  DB_USER
+} from '../config/env';
 
 // Create new database connection
-const connection = new Sequelize(
-  databaseConfigEnv.database,
-  databaseConfigEnv.username,
-  databaseConfigEnv.password,
-  {
-    host: databaseConfigEnv.host,
-    dialect: databaseConfigEnv.dialect,
-    //logging: NODE_ENV === 'development' ? console.info : false,
-    operatorsAliases: Sequelize.Op
-  }
-);
+const connection = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
+  host: DB_HOSTNAME,
+  dialect: DB_DIALECT,
+  //logging: NODE_ENV === 'development' ? console.info : false,
+  operatorsAliases: Sequelize.Op
+});
 
 // Test connection
 console.info('SETUP - Connecting database...');

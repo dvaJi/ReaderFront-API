@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // App Imports
+import { SECRET_KEY } from './../../config/env';
 import serverConfig from '../../config/server';
 import params from '../../config/params';
 import models from '../../setup/models';
@@ -172,7 +173,7 @@ export async function login(parentValue, { email, password }, { clientIp }) {
 
       return {
         user: userDetails,
-        token: jwt.sign(userDetailsToken, serverConfig.secret)
+        token: jwt.sign(userDetailsToken, SECRET_KEY)
       };
     }
   }
