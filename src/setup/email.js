@@ -1,11 +1,11 @@
 import nodemailer from 'nodemailer';
-import serverConfig from '../config/server';
+import { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_USER } from '../config/env';
 
 const transporter = nodemailer.createTransport({
-  service: serverConfig.email.service,
+  service: EMAIL_HOST,
   auth: {
-    user: serverConfig.email.auth.user,
-    pass: serverConfig.email.auth.pass
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD
   }
 });
 
@@ -18,7 +18,7 @@ export function sendActivateEmail({ siteUrl, to, name, token }) {
   const activationUrl = `${siteUrl}auth/activate_account?email=${to}&token=${token}`;
 
   const mailOptions = {
-    from: serverConfig.email.auth.user,
+    from: EMAIL_USER,
     to: to,
     subject: 'Activate your account',
     html: `<h1>Hey ${name},</h1><br>We have received a request to activate your account associated with your email address.<br>To confirm this request, please click <a href="${activationUrl}">here</a><br> Or copy and paste this url in your browser: <a href="${activationUrl}">${activationUrl}</a>`
@@ -34,7 +34,7 @@ export function sendAccountIsActivatedEmail({ siteUrl, to, name }) {
   const activationUrl = `${siteUrl}auth/login`;
 
   const mailOptions = {
-    from: serverConfig.email.auth.user,
+    from: EMAIL_USER,
     to: to,
     subject: 'Account activated',
     html: `<h1>Hey ${name},</h1><br>Your account is activated<br>To use your account please click <a href="${activationUrl}">here</a>`

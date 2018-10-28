@@ -1,6 +1,5 @@
 {
   "port": 8000,
-  "secret": "super-secret-key-readerfront-api",
   "saltRounds": 10,
   "graphql": {
     "endpoint": "/",
@@ -9,12 +8,5 @@
   },
   "upload": {
     "endpoint": "/uploads"
-  },
-  "email": {
-    "service": "gmail",
-    "auth": {
-      "user": "YOUR_EMAIL",
-      "pass": "PASS"
-    }
   }
 }
