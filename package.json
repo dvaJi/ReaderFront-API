@@ -16,7 +16,6 @@
   "scripts": {
     "lint": "eslint src",
     "prettier": "pretty-quick --staged",
-    "precommit": "yarn lint && yarn prettier",
     "setup": "yarn setup:install && yarn setup:db",
     "setup:install": "yarn install",
     "setup:db": "yarn db:migrate && yarn db:seed",
@@ -73,5 +72,10 @@
     "sequelize-cli": "^5.2.0",
     "sharp": "^0.21.0",
     "uuid": "^3.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn prettier"
+    }
   }
 }
