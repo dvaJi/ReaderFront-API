@@ -13,7 +13,8 @@ module.exports = {
           model: 'works',
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: 'cascade'
       },
       genreId: {
         type: Sequelize.INTEGER

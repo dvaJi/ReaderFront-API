@@ -308,8 +308,6 @@ export async function remove(parentValue, { id }, { auth }) {
       // Works does not exists
       throw new Error('The works does not exists.');
     } else {
-      // TODO: Chapters should be deleted too (along with pages)
-      await models.WorksDescription.destroy({ where: { workId: id } });
       return await models.Works.destroy({ where: { id } });
     }
   } else {

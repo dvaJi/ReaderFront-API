@@ -13,7 +13,8 @@ module.exports = {
           model: 'chapters',
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: 'cascade'
       },
       filename: {
         type: Sequelize.STRING

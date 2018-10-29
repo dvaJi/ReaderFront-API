@@ -40,7 +40,7 @@ module.exports = function(sequelize, DataTypes) {
 
   Chapters.associate = function(models) {
     Chapters.belongsTo(models.Works);
-    Chapters.hasMany(models.Page);
+    Chapters.hasMany(models.Page, { onDelete: 'cascade', hooks: true });
   };
 
   return Chapters;
