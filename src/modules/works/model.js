@@ -39,10 +39,13 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Works.associate = function(models) {
-    Works.hasMany(models.Chapter);
-    Works.hasMany(models.WorksDescription);
-    Works.hasMany(models.PeopleWorks);
-    Works.hasMany(models.WorksGenres);
+    Works.hasMany(models.Chapter, { onDelete: 'cascade', hooks: true });
+    Works.hasMany(models.WorksDescription, {
+      onDelete: 'cascade',
+      hooks: true
+    });
+    Works.hasMany(models.PeopleWorks, { onDelete: 'cascade', hooks: true });
+    Works.hasMany(models.WorksGenres, { onDelete: 'cascade', hooks: true });
   };
 
   return Works;

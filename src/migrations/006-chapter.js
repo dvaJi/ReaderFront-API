@@ -13,7 +13,8 @@ module.exports = {
           model: 'works',
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: 'cascade'
       },
       chapter: {
         type: Sequelize.INTEGER

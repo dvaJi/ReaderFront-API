@@ -13,7 +13,8 @@ module.exports = {
           model: 'works',
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: 'cascade'
       },
       peopleId: {
         type: Sequelize.INTEGER,
@@ -21,7 +22,8 @@ module.exports = {
           model: 'peoples',
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: 'cascade'
       },
       rol: {
         type: Sequelize.INTEGER
