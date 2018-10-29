@@ -32,6 +32,9 @@ module.exports = function(sequelize, DataTypes) {
     },
     thumbnail: {
       type: DataTypes.TEXT
+    },
+    releaseDate: {
+      type: DataTypes.DATE
     }
   });
 

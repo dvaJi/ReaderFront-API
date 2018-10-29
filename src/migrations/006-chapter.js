@@ -45,6 +45,10 @@ module.exports = {
       thumbnail: {
         type: Sequelize.TEXT
       },
+      releaseDate: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

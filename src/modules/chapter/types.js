@@ -31,6 +31,7 @@ const ChapterType = new GraphQLObjectType({
     hidden: { type: GraphQLBoolean },
     description: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
+    releaseDate: { type: GraphQLDate },
     createdAt: { type: GraphQLDate },
     updatedAt: { type: GraphQLDate }
   })
