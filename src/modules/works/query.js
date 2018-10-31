@@ -1,5 +1,10 @@
 // Imports
-import { GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
+import {
+  GraphQLString,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLBoolean
+} from 'graphql';
 
 // App Imports
 import { WorkType, WorksStatusType, WorkAggregatesType } from './types';
@@ -20,7 +25,8 @@ export const works = {
     sortBy: { type: GraphQLString },
     first: { type: GraphQLInt },
     offset: { type: GraphQLInt },
-    language: { type: GraphQLInt }
+    language: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getAll
 };
@@ -30,7 +36,8 @@ export const work = {
   type: WorkType,
   args: {
     stub: { type: GraphQLString },
-    language: { type: GraphQLInt }
+    language: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getByStub
 };
@@ -66,7 +73,8 @@ export const workAggregates = {
   args: {
     aggregate: { type: GraphQLString },
     aggregateColumn: { type: GraphQLString },
-    language: { type: GraphQLInt }
+    language: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getAggregates
 };

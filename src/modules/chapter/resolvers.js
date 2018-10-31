@@ -14,16 +14,10 @@ import models from '../../setup/models';
 // Get all chapters
 export async function getAll(
   parentValue,
-  { language, orderBy, first, offset }
+  { language, orderBy, first, offset, showHidden }
 ) {
-  const langWhere =
-    language !== -1
-      ? {
-          where: { language }
-        }
-      : {};
   return await models.Chapter.findAll({
-    ...langWhere,
+    ...where(showHidden, language),
     order: [['releaseDate', orderBy], [models.Page, 'filename']],
     include: [
       { model: models.Works, as: 'work' },
@@ -35,15 +29,12 @@ export async function getAll(
 }
 
 // Get chapter by work
-export async function getByWork(parentValue, { workStub, language }) {
-  const langWhere =
-    language !== -1
-      ? {
-          where: { language }
-        }
-      : {};
+export async function getByWork(
+  parentValue,
+  { workStub, language, showHidden }
+) {
   return await models.Chapter.findAll({
-    langWhere,
+    ...where(showHidden, language),
     include: [
       { model: models.Works, as: 'work', where: { stub: workStub } },
       { model: models.Page, as: 'pages' }
@@ -53,9 +44,12 @@ export async function getByWork(parentValue, { workStub, language }) {
 }
 
 // Get chapter by id
-export async function getById(parentValue, { id }) {
+export async function getById(parentValue, { id, showHidden }) {
+  const where = showHidden
+    ? { where: { id } }
+    : { where: { hidden: false, id } };
   return await models.Chapter.findOne({
-    where: { id },
+    ...where,
     include: [
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
@@ -241,3 +235,14 @@ function chapterDir(chapter) {
     chapter.subchapter
   }_${chapter.stub}_${chapter.uniqid}`;
 }
+
+const where = (showHidden, language) => {
+  if (showHidden && language === -1) {
+    return {};
+  }
+
+  const oLanguage = language === -1 ? {} : { language };
+  const sHidden = showHidden ? {} : { hidden: false };
+
+  return { where: { ...sHidden, ...oLanguage } };
+};

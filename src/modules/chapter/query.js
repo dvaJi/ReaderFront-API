@@ -1,5 +1,10 @@
 // Imports
-import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
+import {
+  GraphQLInt,
+  GraphQLString,
+  GraphQLList,
+  GraphQLBoolean
+} from 'graphql';
 
 // App Imports
 import { ChapterType } from './types';
@@ -12,7 +17,8 @@ export const chapters = {
     language: { type: GraphQLInt },
     orderBy: { type: GraphQLString },
     first: { type: GraphQLInt },
-    offset: { type: GraphQLInt }
+    offset: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getAll
 };
@@ -22,7 +28,8 @@ export const chaptersByWork = {
   type: new GraphQLList(ChapterType),
   args: {
     workStub: { type: GraphQLString },
-    language: { type: GraphQLInt }
+    language: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getByWork
 };
@@ -31,7 +38,8 @@ export const chaptersByWork = {
 export const chapterById = {
   type: ChapterType,
   args: {
-    id: { type: GraphQLInt }
+    id: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getById
 };
