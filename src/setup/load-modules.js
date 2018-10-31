@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import compression from 'compression';
 
 // App Imports
 import { NODE_ENV } from '../config/env';
@@ -15,6 +16,9 @@ export default function(server) {
 
   // Enable CORS
   server.use(cors());
+
+  // Compress response bodies for all requests
+  server.use(compression());
 
   // Request body parser
   server.use(bodyParser.json());
