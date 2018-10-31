@@ -1,5 +1,10 @@
 // Imports
-import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
+import {
+  GraphQLInt,
+  GraphQLString,
+  GraphQLList,
+  GraphQLBoolean
+} from 'graphql';
 
 // App Imports
 import { PostType, PostsAggregatesType } from './types';
@@ -13,7 +18,8 @@ export const posts = {
     orderBy: { type: GraphQLString },
     sortBy: { type: GraphQLString },
     first: { type: GraphQLInt },
-    offset: { type: GraphQLInt }
+    offset: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getAll
 };
@@ -22,7 +28,8 @@ export const posts = {
 export const postByStub = {
   type: PostType,
   args: {
-    stub: { type: GraphQLString }
+    stub: { type: GraphQLString },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getByStub
 };
@@ -35,7 +42,8 @@ export const postsByCategory = {
     language: { type: GraphQLInt },
     orderBy: { type: GraphQLString },
     first: { type: GraphQLInt },
-    offset: { type: GraphQLInt }
+    offset: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getByCategory
 };
@@ -46,7 +54,8 @@ export const postsAggregates = {
   args: {
     aggregate: { type: GraphQLString },
     aggregateColumn: { type: GraphQLString },
-    language: { type: GraphQLInt }
+    language: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
   },
   resolve: getAggregates
 };

@@ -13,33 +13,27 @@ import { createDescriptions } from '../works-description/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
+const where = showHidden => (showHidden ? {} : { where: { hidden: false } });
+const whereCond = showHidden => (showHidden ? {} : { hidden: false });
+
 // Get all works
 export async function getAll(
   parentValue,
-  { language, orderBy, first, offset, sortBy }
+  { language, orderBy, first, offset, sortBy, showHidden }
 ) {
-  const descriptionJoin =
-    language !== -1
-      ? {
-          model: models.WorksDescription,
-          as: 'works_descriptions',
-          where: { language }
-        }
-      : {
-          model: models.WorksDescription,
-          as: 'works_descriptions'
-        };
   return await models.Works.findAll({
     order: [[sortBy, orderBy]],
     offset: offset,
     limit: first,
+    ...where(showHidden),
     include: [
       {
         model: models.Chapter,
+        ...where(showHidden),
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
-      descriptionJoin,
+      descriptionJoin(language),
       {
         model: models.WorksGenres
       },
@@ -53,27 +47,17 @@ export async function getAll(
 }
 
 // Get works by stub
-export async function getByStub(parentValue, { stub, language }) {
-  const descriptionJoin =
-    language !== -1
-      ? {
-          model: models.WorksDescription,
-          as: 'works_descriptions',
-          where: { language }
-        }
-      : {
-          model: models.WorksDescription,
-          as: 'works_descriptions'
-        };
+export async function getByStub(parentValue, { stub, language, showHidden }) {
   const works = await models.Works.findOne({
-    where: { stub },
+    where: { stub, ...whereCond(showHidden) },
     include: [
       {
         model: models.Chapter,
+        ...where(showHidden),
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
-      descriptionJoin,
+      descriptionJoin(language),
       {
         model: models.WorksGenres
       },
@@ -95,21 +79,10 @@ export async function getByStub(parentValue, { stub, language }) {
 
 // Get works by ID
 export async function getById(parentValue, { workId, language }) {
-  const descriptionJoin =
-    language !== -1
-      ? {
-          model: models.WorksDescription,
-          as: 'works_descriptions',
-          where: { language }
-        }
-      : {
-          model: models.WorksDescription,
-          as: 'works_descriptions'
-        };
   const works = await models.Works.findOne({
     where: { id: workId },
     include: [
-      descriptionJoin,
+      descriptionJoin(language),
       {
         model: models.Chapter,
         as: 'chapters',
@@ -136,24 +109,15 @@ export async function getById(parentValue, { workId, language }) {
 
 // Get random work
 export async function getRandom(parentValue, { language }) {
-  const descriptionJoin =
-    language !== -1
-      ? {
-          model: models.WorksDescription,
-          as: 'works_descriptions',
-          where: { language }
-        }
-      : {
-          model: models.WorksDescription,
-          as: 'works_descriptions'
-        };
   return await models.Works.findOne({
     limit: 1,
     order: [[models.Sequelize.fn('RAND')]],
+    where: { hidden: false },
     include: [
-      descriptionJoin,
+      descriptionJoin(language),
       {
         model: models.Chapter,
+        where: { hidden: false },
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
@@ -323,28 +287,18 @@ export async function getStatusTypes() {
 // Get all work aggregates
 export async function getAggregates(
   parentValue,
-  { aggregate, aggregateColumn, language }
+  { aggregate, aggregateColumn, language, showHidden }
 ) {
-  const descriptionJoin =
-    language !== -1
-      ? {
-          model: models.WorksDescription,
-          as: 'works_descriptions',
-          where: { language }
-        }
-      : {
-          model: models.WorksDescription,
-          as: 'works_descriptions'
-        };
   let agg = 0;
   await models.Works.findAll({
+    ...where(showHidden),
     attributes: [
       [
         Sequelize.fn(aggregate, Sequelize.col('works.' + aggregateColumn)),
         aggregate.toLowerCase()
       ]
     ],
-    include: [descriptionJoin]
+    include: [descriptionJoin(language)]
   }).then(async aggs => {
     if (aggs.length > 0) {
       agg = await aggs[0].get()[aggregate.toLowerCase()];
@@ -399,3 +353,15 @@ export async function createWorkCover(work, filename) {
 
   return coversTypes;
 }
+
+const descriptionJoin = lang =>
+  lang !== -1
+    ? {
+        model: models.WorksDescription,
+        as: 'works_descriptions',
+        where: { language: lang }
+      }
+    : {
+        model: models.WorksDescription,
+        as: 'works_descriptions'
+      };

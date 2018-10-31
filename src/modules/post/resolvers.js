@@ -14,11 +14,10 @@ import models from '../../setup/models';
 // Get posts
 export async function getAll(
   parentValue,
-  { language, orderBy, sortBy, first, offset }
+  { language, orderBy, sortBy, first, offset, showHidden }
 ) {
-  const languageFilter = language !== -1 ? { language: language } : {};
   return await models.Post.findAll({
-    where: languageFilter,
+    ...where(showHidden, language),
     order: [[sortBy, orderBy]],
     include: [{ model: models.User, as: 'user' }],
     offset: offset,
@@ -27,11 +26,12 @@ export async function getAll(
 }
 
 // Get post by stub
-export async function getByStub(parentValue, { stub }) {
+export async function getByStub(parentValue, { stub, showHidden }) {
+  const where = showHidden
+    ? { where: { stub } }
+    : { where: { hidden: false, stub } };
   return await models.Post.findOne({
-    where: {
-      stub
-    },
+    ...where,
     include: [{ model: models.User, as: 'user' }]
   });
 }
@@ -39,13 +39,10 @@ export async function getByStub(parentValue, { stub }) {
 // Get posts by category
 export async function getByCategory(
   parentValue,
-  { categoryId, language, orderBy, first, offset }
+  { categoryId, language, orderBy, first, offset, showHidden }
 ) {
   return await models.Post.findAll({
-    where: {
-      language,
-      category: categoryId
-    },
+    ...whereCat(showHidden, { language }, { category: categoryId }),
     order: [['id', orderBy]],
     include: [{ model: models.User, as: 'user' }],
     offset: offset,
@@ -230,23 +227,17 @@ export async function remove(parentValue, { id }, { auth }) {
 // Get all posts aggregates
 export async function getAggregates(
   parentValue,
-  { aggregate, aggregateColumn, language }
+  { aggregate, aggregateColumn, language, showHidden }
 ) {
-  const languageFilter =
-    language !== -1
-      ? {
-          where: { language }
-        }
-      : {};
   let agg = 0;
   await models.Post.findAll({
+    ...where(showHidden, language),
     attributes: [
       [
         Sequelize.fn(aggregate, Sequelize.col('posts.' + aggregateColumn)),
         aggregate.toLowerCase()
       ]
-    ],
-    languageFilter
+    ]
   }).then(async aggs => {
     if (aggs.length > 0) {
       agg = await aggs[0].get()[aggregate.toLowerCase()];
@@ -258,3 +249,24 @@ export async function getAggregates(
 
   return result;
 }
+
+const where = (showHidden, language) => {
+  if (showHidden && language === -1) {
+    return {};
+  }
+
+  const sHidden = showHidden ? {} : { status: 1 };
+  const oLanguage = language === -1 ? {} : { language };
+  return { where: { ...sHidden, ...oLanguage } };
+};
+
+const whereCat = (showHidden, language, category) => {
+  if (showHidden && language === -1 && !category) {
+    return {};
+  }
+
+  const sHidden = showHidden ? {} : { status: 1 };
+  const oLanguage = language === -1 ? {} : { language };
+
+  return { where: { ...sHidden, ...oLanguage, ...category } };
+};
