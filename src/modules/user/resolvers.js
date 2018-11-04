@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // App Imports
-import { SECRET_KEY } from './../../config/env';
+import { SECRET_KEY, APP_URL } from './../../config/env';
 import serverConfig from '../../config/server';
 import params from '../../config/params';
 import models from '../../setup/models';
@@ -42,12 +42,8 @@ export async function create(
       lastIp: clientIp
     });
 
-    const preference = await models.Preference.findOne({
-      where: { name: 'frontend_url' }
-    }).get();
-
     await sendActivateEmail({
-      siteUrl: preference.value,
+      siteUrl: APP_URL,
       to: newUser.email,
       name: newUser.name,
       token: newUser.activatedToken
@@ -96,13 +92,8 @@ export async function activate(
       { where: { email: email } }
     );
 
-    const preference = await models.Preference.findOne({
-      where: { name: 'frontend_url' }
-    });
-    const preferenceDetail = preference.get();
-
     await sendAccountIsActivatedEmail({
-      siteUrl: preferenceDetail.value,
+      siteUrl: APP_URL,
       to: userDetails.email,
       name: userDetails.name
     });
