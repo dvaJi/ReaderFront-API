@@ -231,9 +231,9 @@ export async function getTypes() {
 }
 
 function chapterDir(chapter) {
-  return `${chapter.work.stub}_${chapter.work.uniqid}/${chapter.chapter}-${
-    chapter.subchapter
-  }_${chapter.stub}_${chapter.uniqid}`;
+  return `${chapter.work.stub}_${chapter.work.uniqid}/${chapter.stub}_${
+    chapter.uniqid
+  }`;
 }
 
 const where = (showHidden, language) => {

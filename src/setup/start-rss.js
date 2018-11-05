@@ -100,10 +100,6 @@ function generateThumbnailUrl(chapter, baseUrl) {
     '_' +
     chapter.work.uniqid +
     '/' +
-    chapter.chapter +
-    '-' +
-    chapter.subchapter +
-    '_' +
     chapter.stub +
     '_' +
     chapter.uniqid +

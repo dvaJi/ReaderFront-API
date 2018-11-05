@@ -39,14 +39,7 @@ export async function create(
       'uploads'
     );
     const workDir = chapterDetails.work.stub + '_' + chapterDetails.work.uniqid;
-    const chapDir =
-      chapterDetails.chapter +
-      '-' +
-      chapterDetails.subchapter +
-      '_' +
-      chapterDetails.stub +
-      '_' +
-      chapterDetails.uniqid;
+    const chapDir = chapterDetails.stub + '_' + chapterDetails.uniqid;
     const newDir = path.join(
       __dirname,
       '..',
@@ -115,14 +108,7 @@ export async function remove(parentValue, { id }, { auth }) {
       // TODO: Helpers to avoid creating dir every time
       const workDir =
         chapterDetails.work.stub + '_' + chapterDetails.work.uniqid;
-      const chapDir =
-        chapterDetails.chapter +
-        '-' +
-        chapterDetails.subchapter +
-        '_' +
-        chapterDetails.stub +
-        '_' +
-        chapterDetails.uniqid;
+      const chapDir = chapterDetails.stub + '_' + chapterDetails.uniqid;
       const pageDir = path.join(
         __dirname,
         '..',
