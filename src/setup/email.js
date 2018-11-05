@@ -1,13 +1,16 @@
 import nodemailer from 'nodemailer';
-import { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_USER } from '../config/env';
+import sgTransport from 'nodemailer-sendgrid-transport';
 
-const transporter = nodemailer.createTransport({
-  service: EMAIL_HOST,
+// App imports
+import { SENDGRID_API, EMAIL } from '../config/env';
+
+const sendgridOptions = {
   auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASSWORD
+    api_key: SENDGRID_API
   }
-});
+};
+
+const transporter = nodemailer.createTransport(sgTransport(sendgridOptions));
 
 export function sendActivateEmail({ siteUrl, to, name, token }) {
   if (to === null || token === null) {
@@ -18,7 +21,7 @@ export function sendActivateEmail({ siteUrl, to, name, token }) {
   const activationUrl = `${siteUrl}auth/activate_account?email=${to}&token=${token}`;
 
   const mailOptions = {
-    from: EMAIL_USER,
+    from: EMAIL,
     to: to,
     subject: 'Activate your account',
     html: `<h1>Hey ${name},</h1><br>We have received a request to activate your account associated with your email address.<br>To confirm this request, please click <a href="${activationUrl}">here</a><br> Or copy and paste this url in your browser: <a href="${activationUrl}">${activationUrl}</a>`
@@ -34,7 +37,7 @@ export function sendAccountIsActivatedEmail({ siteUrl, to, name }) {
   const activationUrl = `${siteUrl}auth/login`;
 
   const mailOptions = {
-    from: EMAIL_USER,
+    from: EMAIL,
     to: to,
     subject: 'Account activated',
     html: `<h1>Hey ${name},</h1><br>Your account is activated<br>To use your account please click <a href="${activationUrl}">here</a>`
