@@ -18,6 +18,5 @@ export const APP_URL = process.env.APP_URL;
 export const API_URL = process.env.API_URL;
 
 // Email
-export const EMAIL_HOST = process.env.EMAIL_HOST;
-export const EMAIL_USER = process.env.EMAIL_USER;
-export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+export const SENDGRID_API = process.env.SENDGRID_API;
+export const EMAIL = process.env.EMAIL;
