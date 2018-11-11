@@ -1,6 +1,6 @@
 {
   "name": "readerfront-api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Graphql Backend for ReaderFront, written in Node.JS",
   "author": "dvaJi",
   "keywords": [
