@@ -6,9 +6,12 @@ import {
   ensureFile,
   move,
   remove,
-  exists,
+  statSync,
   createReadStream
 } from 'fs-extra';
+
+// App imports
+import { create as createThumbLog } from '../modules/thumbs-log/resolvers';
 
 /**
  * Generate a Thumbnail
@@ -22,7 +25,8 @@ export async function createThumbnail(
   filename,
   thumbPath,
   type,
-  isLowQuality = false
+  isLowQuality = false,
+  directory
 ) {
   try {
     await ensureDir(thumbPath, err => {
@@ -33,16 +37,19 @@ export async function createThumbnail(
 
     // Check if the image already exist
     let thumbExist = false;
-    await exists(newImageDir)
-      .then(exists => {
-        thumbExist = exists;
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    try {
+      await statSync(newImageDir);
+      thumbExist = true;
+    } catch (err) {
+      console.error(err);
+    }
 
     if (thumbExist && isLowQuality) {
-      return await convertToWebp(thumbPath, type.name + '_' + filename);
+      return await convertToWebp(
+        thumbPath,
+        type.name + '_' + filename,
+        directory
+      );
     }
 
     if (thumbExist) {
@@ -60,8 +67,20 @@ export async function createThumbnail(
         return err;
       });
 
+    // Create a new thumb log
+    await createThumbLog(undefined, {
+      filename: type.name + '_' + filename,
+      size: 0,
+      workDir: directory.workDir,
+      chapterDir: directory.chapterDir
+    });
+
     if (isLowQuality) {
-      return await convertToWebp(thumbPath, type.name + '_' + filename);
+      return await convertToWebp(
+        thumbPath,
+        type.name + '_' + filename,
+        directory
+      );
     }
 
     return await createReadStream(newImageDir);
@@ -74,10 +93,11 @@ export async function createThumbnail(
 export async function getOriginalImage(
   filename,
   thumbPath,
-  isLowQuality = false
+  isLowQuality = false,
+  directory
 ) {
   if (isLowQuality) {
-    return await convertToWebp(thumbPath, filename);
+    return await convertToWebp(thumbPath, filename, directory);
   }
 
   return await createReadStream(path.join(thumbPath, filename));
@@ -89,7 +109,7 @@ export async function getOriginalImage(
  * @param {*} directory
  * @param {*} filename
  */
-export async function convertToWebp(directory, filename) {
+export async function convertToWebp(directory, filename, thumbdir) {
   try {
     const imagePath = path.join(directory, filename);
     const fileExtension = getFileExtension(filename);
@@ -98,13 +118,14 @@ export async function convertToWebp(directory, filename) {
 
     // Check if the webp image already exist
     let webpExists = false;
-    await exists(newImagePath)
-      .then(exists => {
-        webpExists = exists;
-      })
-      .catch(err => {
+    try {
+      await statSync(newImagePath);
+      webpExists = true;
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
         console.error(err);
-      });
+      }
+    }
 
     if (webpExists) {
       return await createReadStream(newImagePath);
@@ -119,6 +140,14 @@ export async function convertToWebp(directory, filename) {
     await sharp(imagePath)
       .webp()
       .toFile(newImagePath);
+
+    // Create a new thumb log
+    await createThumbLog(undefined, {
+      filename: newFilename,
+      size: 0,
+      workDir: thumbdir.workDir,
+      chapterDir: thumbdir.chapterDir
+    });
 
     return await createReadStream(newImagePath);
   } catch (err) {

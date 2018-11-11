@@ -1,4 +1,6 @@
 import path from 'path';
+import subDays from 'date-fns/sub_days';
+import subYears from 'date-fns/sub_years';
 
 // App Imports
 import {
@@ -7,6 +9,7 @@ import {
   getDefaultThumbnail,
   getOriginalImage
 } from './thumbnails';
+import { cleanThumbs } from './operations';
 import params from '../config/params.json';
 
 // File upload configurations and route
@@ -20,12 +23,19 @@ export default function(server) {
     const filename = request.params.filename;
     const isLowQuality = request.query.lowQuality === 'true';
     const size = request.query.size;
+    const directoryObj = {
+      workDir: request.params.dir,
+      chapterDir: ''
+    };
 
     if (size === 'original') {
       let coverPath = await getThumbPath(type, directory);
-      return getOriginalImage(filename, coverPath, isLowQuality).then(img =>
-        img.pipe(response)
-      );
+      return getOriginalImage(
+        filename,
+        coverPath,
+        isLowQuality,
+        directoryObj
+      ).then(img => img.pipe(response));
     }
 
     const coversTypes = Object.keys(params.works.cover_type).map(
@@ -43,9 +53,13 @@ export default function(server) {
     let coverPath = await getThumbPath(type, directory);
 
     if (coverPath) {
-      return createThumbnail(filename, coverPath, coverType, isLowQuality).then(
-        img => img.pipe(response)
-      );
+      return createThumbnail(
+        filename,
+        coverPath,
+        coverType,
+        isLowQuality,
+        directoryObj
+      ).then(img => img.pipe(response));
     }
 
     return getDefaultThumbnail().then(img => img.pipe(response));
@@ -62,12 +76,19 @@ export default function(server) {
       const filename = request.params.filename;
       const isLowQuality = request.query.lowQuality === 'true';
       const size = request.query.size;
+      const directoryObj = {
+        workDir: request.params.workDir,
+        chapterDir: request.params.dir
+      };
 
       if (size === 'original') {
         let coverPath = await getThumbPath(type, directory);
-        return getOriginalImage(filename, coverPath, isLowQuality).then(img =>
-          img.pipe(response)
-        );
+        return getOriginalImage(
+          filename,
+          coverPath,
+          isLowQuality,
+          directoryObj
+        ).then(img => img.pipe(response));
       }
 
       const coversTypes = Object.keys(params.works.cover_type).map(
@@ -89,11 +110,22 @@ export default function(server) {
           filename,
           coverPath,
           coverType,
-          isLowQuality
+          isLowQuality,
+          directoryObj
         ).then(img => img.pipe(response));
       }
 
       return getDefaultThumbnail().then(img => img.pipe(response));
     }
   );
+
+  server.get('/clean/:days', async (request, response) => {
+    const daysToPreserve = parseInt(request.params.days, 0) || 7;
+    const endDate = subDays(new Date(), daysToPreserve);
+    const startDate = subYears(endDate, 1);
+
+    await cleanThumbs(startDate, endDate);
+
+    response.send('Done!');
+  });
 }

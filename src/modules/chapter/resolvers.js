@@ -28,6 +28,26 @@ export async function getAll(
   });
 }
 
+export async function getLast(parentValue, { offset }) {
+  return await models.Chapter.findOne({
+    order: [['updatedAt', 'DESC']],
+    offset: offset,
+    limit: 1
+  });
+}
+
+export async function getAllByDate(parentValue, { startDate, endDate }) {
+  const where = {
+    updatedAt: {
+      $between: [startDate, endDate]
+    }
+  };
+  return await models.Chapter.findAll({
+    where,
+    include: [{ model: models.Page, as: 'pages' }]
+  });
+}
+
 // Get chapter by work
 export async function getByWork(
   parentValue,

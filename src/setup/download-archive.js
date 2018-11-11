@@ -33,12 +33,14 @@ export default function(server) {
         const archivePath = await getArchivePath(archiveDetail);
         return response.download(archivePath);
       } else {
+        // Update archive (zip file) with latest pages from the chapter
         const archiveUpdated = await updateArchiveZip(archiveDetail);
         await updateArchive(archiveUpdated);
         const archivePath = await getArchivePath(archiveUpdated);
         return response.download(archivePath);
       }
     } else {
+      // Just create a new archive
       const newArchive = await createArchiveZip(idChapter);
       await createArchive(newArchive);
       const archivePath = await getArchivePath(newArchive);

@@ -210,14 +210,7 @@ export async function getArchivePath(archive) {
   const chapterDetail = await chapter.get();
   const work = chapterDetail.work;
   const workPath = work.stub + '_' + work.uniqid;
-  const chapterPath =
-    chapter.chapter +
-    '-' +
-    chapter.subchapter +
-    '_' +
-    chapter.stub +
-    '_' +
-    chapter.uniqid;
+  const chapterPath = chapter.stub + '_' + chapter.uniqid;
   return path.join(
     __dirname,
     '..',
