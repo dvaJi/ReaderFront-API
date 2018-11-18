@@ -98,9 +98,9 @@ export async function create(
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    uniqid = uuidv1();
     if (releaseDate === null) {
       releaseDate = new Date();
-      uniqid = uuidv1();
     }
     return await models.Chapter.create({
       workId,
