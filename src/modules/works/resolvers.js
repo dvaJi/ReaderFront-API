@@ -19,20 +19,32 @@ const whereCond = showHidden => (showHidden ? {} : { hidden: false });
 // Get all works
 export async function getAll(
   parentValue,
-  { language, orderBy, first, offset, sortBy, showHidden }
+  { language, orderBy, first, offset, sortBy, showHidden },
+  req,
+  { fieldNodes }
 ) {
+  const fields = fieldNodes[0].selectionSet.selections.map(
+    selection => selection.name.value
+  );
+  const includeChapters = fields.includes('chapters');
+  const chapterJoin = includeChapters
+    ? [
+        {
+          model: models.Chapter,
+          ...where(showHidden),
+          as: 'chapters',
+          include: [{ model: models.Page, as: 'pages' }]
+        }
+      ]
+    : {};
+
   return await models.Works.findAll({
     order: [[sortBy, orderBy]],
     offset: offset,
     limit: first,
     ...where(showHidden),
     include: [
-      {
-        model: models.Chapter,
-        ...where(showHidden),
-        as: 'chapters',
-        include: [{ model: models.Page, as: 'pages' }]
-      },
+      ...chapterJoin,
       descriptionJoin(language),
       {
         model: models.WorksGenres
@@ -108,19 +120,34 @@ export async function getById(parentValue, { workId, language }) {
 }
 
 // Get random work
-export async function getRandom(parentValue, { language }) {
+export async function getRandom(
+  parentValue,
+  { language },
+  req,
+  { fieldNodes }
+) {
+  const fields = fieldNodes[0].selectionSet.selections.map(
+    selection => selection.name.value
+  );
+  const includeChapters = fields.includes('chapters');
+  const chapterJoin = includeChapters
+    ? [
+        {
+          model: models.Chapter,
+          where: { hidden: false },
+          as: 'chapters',
+          include: [{ model: models.Page, as: 'pages' }]
+        }
+      ]
+    : {};
+
   return await models.Works.findOne({
     limit: 1,
     order: [[models.Sequelize.fn('RAND')]],
     where: { hidden: false },
     include: [
       descriptionJoin(language),
-      {
-        model: models.Chapter,
-        where: { hidden: false },
-        as: 'chapters',
-        include: [{ model: models.Page, as: 'pages' }]
-      },
+      ...chapterJoin,
       {
         model: models.WorksGenres
       },
