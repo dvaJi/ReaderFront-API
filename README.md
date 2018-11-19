@@ -1,5 +1,7 @@
 # ReaderFront API
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/dvaJi/ReaderFront-API.svg)](https://greenkeeper.io/)
+
 #### A comic reader meant for users to enjoy reading
 
 - **API** built with Node, GraphQL, Express, Sequelize (MySQL) and JWT Auth
