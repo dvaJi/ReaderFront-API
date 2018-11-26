@@ -27,7 +27,10 @@ export default function(server) {
   });
 
   const upload = multer({
-    storage: storage
+    storage: storage,
+    limits: {
+      fieldSize: 3
+    }
   }).single('file');
 
   // Upload route
