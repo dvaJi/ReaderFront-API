@@ -78,6 +78,17 @@ export async function getById(parentValue, { id, showHidden }) {
   });
 }
 
+// Get all chapters for RSS
+export async function getAllRSS({ language, orderBy, showHidden }) {
+  return await models.Chapter.findAll({
+    ...where(showHidden, language),
+    order: [['releaseDate', orderBy]],
+    include: [{ model: models.Works, as: 'work' }],
+    offset: 0,
+    limit: 25
+  });
+}
+
 // Create chapter
 export async function create(
   parentValue,
