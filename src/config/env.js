@@ -14,7 +14,8 @@ export const PORT = process.env.PORT || 8000;
 export const SECRET_KEY = process.env.SECRET_KEY;
 
 // GQL Config
-export const GRAPHQL_IDE = process.env.GRAPHQL_IDE || false;
+export const GRAPHQL_IDE =
+  process.env.GRAPHQL_IDE || NODE_ENV === 'development' || false;
 
 // URL
 export const APP_URL = process.env.APP_URL;
