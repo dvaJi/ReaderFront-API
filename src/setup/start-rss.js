@@ -110,6 +110,7 @@ function generateChapterUrl(chapter, frontendBaseUrl) {
   const lang = languages.find(ln => ln.id === chapter.language);
   return (
     frontendBaseUrl +
+    'read/' +
     chapter.work.stub +
     '/' +
     lang.name +
