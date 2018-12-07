@@ -1,9 +1,10 @@
 import { Feed } from 'feed';
+import compareDesc from 'date-fns/compare_desc';
 
 // App Imports
 import params from '../config/params.json';
-import { getAll } from '../modules/chapter/resolvers';
-import { getByName } from '../modules/preferences/resolvers';
+import { getAllRSS } from '../modules/chapter/resolvers';
+import { API_URL, APP_URL, REACT_APP_APP_TITLE } from '../config/env';
 
 const languages = Object.keys(params.global.languages).map(
   k => params.global.languages[k]
@@ -15,49 +16,78 @@ export default function(server) {
 
   // Thumbnail route
   server.get('/feed/rss/:lang', async (request, response) => {
-    const baseUrl = request.protocol + '://' + request.get('host');
-    const configFrontEnd = await getByName(undefined, {
-      name: 'frontend_url'
-    });
-    const siteTitle = await getByName(undefined, {
-      name: 'site_title'
-    });
-    const frontendBaseUrl = request.protocol + '://' + configFrontEnd + '/';
     const language = request.params.lang;
-    const feedConfig = new Feed({
-      title: siteTitle,
-      id: frontendBaseUrl,
-      link: frontendBaseUrl,
-      updated: new Date(),
-      generator: 'ReaderFront'
-    });
-
-    const chapters = await getAll(undefined, {
+    let chapters = await getAllRSS({
       language,
-      orderBy: 'DESC',
-      first: 10,
-      offset: 0
+      orderBy: 'DESC'
     });
 
-    for (const chapter of chapters) {
-      await feedConfig.addItem({
-        title: generateChapterTitle(chapter),
-        id: generateChapterUrl(chapter, frontendBaseUrl),
-        link: generateChapterUrl(chapter, frontendBaseUrl),
-        description: chapter.description,
-        /*author: [
-          {
-            name: 'MANGAKA',
-          }
-        ],*/
-        date: chapter.updatedAt,
-        image: generateThumbnailUrl(chapter, baseUrl)
-      });
-    }
+    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
+    const feedConfig = await generateFeed(chapters);
 
     response.type('rss');
     response.send(feedConfig.rss2());
   });
+
+  server.get('/feed/json/:lang', async (request, response) => {
+    const language = request.params.lang;
+    let chapters = await getAllRSS({
+      language,
+      orderBy: 'DESC'
+    });
+
+    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
+    const feedConfig = await generateFeed(chapters);
+
+    response.type('json');
+    response.send(feedConfig.json1());
+  });
+
+  server.get('/feed/atom/:lang', async (request, response) => {
+    const language = request.params.lang;
+    let chapters = await getAllRSS({
+      language,
+      orderBy: 'DESC'
+    });
+
+    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
+    const feedConfig = await generateFeed(chapters);
+
+    response.type('atom');
+    response.send(feedConfig.atom1());
+  });
+}
+
+async function generateFeed(chapters) {
+  const feedConfig = new Feed({
+    title: REACT_APP_APP_TITLE,
+    id: APP_URL,
+    link: APP_URL,
+    updated: chapters ? chapters[0].releaseDate : new Date(),
+    generator: 'ReaderFront',
+    author: {
+      name: 'dvaJi',
+      link: 'https://github.com/dvaJi'
+    }
+  });
+
+  for (const chapter of chapters) {
+    await feedConfig.addItem({
+      title: generateChapterTitle(chapter),
+      id: generateChapterUrl(chapter, APP_URL),
+      link: generateChapterUrl(chapter, APP_URL),
+      description: chapter.description,
+      /*author: [
+        {
+          name: 'MANGAKA',
+        }
+      ],*/
+      date: chapter.releaseDate,
+      image: generateThumbnailUrl(chapter, API_URL)
+    });
+  }
+
+  return feedConfig;
 }
 
 function generateChapterTitle(chapter) {
@@ -80,6 +110,7 @@ function generateChapterUrl(chapter, frontendBaseUrl) {
   const lang = languages.find(ln => ln.id === chapter.language);
   return (
     frontendBaseUrl +
+    'read/' +
     chapter.work.stub +
     '/' +
     lang.name +
@@ -95,7 +126,7 @@ function generateChapterUrl(chapter, frontendBaseUrl) {
 function generateThumbnailUrl(chapter, baseUrl) {
   return (
     baseUrl +
-    '/covers/chapter/' +
+    'covers/chapter/' +
     chapter.work.stub +
     '_' +
     chapter.work.uniqid +
