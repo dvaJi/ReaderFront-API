@@ -7,7 +7,7 @@ import { getAllRSS } from '../modules/chapter/resolvers';
 import { API_URL, APP_URL, REACT_APP_APP_TITLE } from '../config/env';
 
 const languages = Object.keys(params.global.languages).map(
-  k => params.global.languages[k]
+  lang => params.global.languages[lang]
 );
 
 // File upload configurations and route
@@ -15,46 +15,27 @@ export default function(server) {
   console.info('SETUP - RSS...');
 
   // Thumbnail route
-  server.get('/feed/rss/:lang', async (request, response) => {
+  server.get('/feed/:feed/:lang', async (request, response) => {
     const language = request.params.lang;
+    const feed = request.params.feed;
     let chapters = await getAllRSS({
       language,
       orderBy: 'DESC'
     });
 
-    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
+    chapters = await chapters.sort((ch1, ch2) =>
+      compareDesc(ch1.releaseDate, ch2.releaseDate)
+    );
     const feedConfig = await generateFeed(chapters);
 
-    response.type('rss');
-    response.send(feedConfig.rss2());
-  });
-
-  server.get('/feed/json/:lang', async (request, response) => {
-    const language = request.params.lang;
-    let chapters = await getAllRSS({
-      language,
-      orderBy: 'DESC'
-    });
-
-    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
-    const feedConfig = await generateFeed(chapters);
-
-    response.type('json');
-    response.send(feedConfig.json1());
-  });
-
-  server.get('/feed/atom/:lang', async (request, response) => {
-    const language = request.params.lang;
-    let chapters = await getAllRSS({
-      language,
-      orderBy: 'DESC'
-    });
-
-    chapters = await chapters.sort((ch1, ch2) => compareDesc(ch1, ch2));
-    const feedConfig = await generateFeed(chapters);
-
-    response.type('atom');
-    response.send(feedConfig.atom1());
+    response.type(feed);
+    if (feed === 'atom') {
+      response.send(feedConfig.atom1());
+    } else if (feed === 'json') {
+      response.send(feedConfig.json1());
+    } else {
+      response.send(feedConfig.rss2());
+    }
   });
 }
 
