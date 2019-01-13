@@ -138,7 +138,7 @@ export async function remove(parentValue, { id }, { auth }) {
 
         await removeThumbLog(undefined, { id: thumblogDetail.id });
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
 
       return await models.Page.destroy({ where: { id } });
