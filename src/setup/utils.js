@@ -52,3 +52,26 @@ export const sanitizeFilename = (filename, replacement = '') =>
     .replace(windowsTrailingRe, replacement)
     .replace(removeSpecialCharacters, replacement)
     .replace(removeWhiteSpace, '_');
+
+/**
+ * Same functionality as forEach, but runs only one callback at a time.
+ * @param {Array} array - Array to iterate over.
+ * @param {Function} callback - Function to apply each item in `array`. Accepts three arguments: `currentValue`, `index` and `array`.
+ * @param {Object} [thisArg] - Value to use as *this* when executing the `callback`.
+ * @return {Promise} - Returns a Promise with undefined value.
+ */
+export async function forEachSeries(array, callback, thisArg) {
+  for (let i = 0; i < array.length; i++) {
+    if (i in array) {
+      await callback.call(thisArg || this, await array[i], i, array);
+    }
+  }
+}
+
+/**
+ * Get extension from a file
+ * @param {*} filename
+ */
+export function getFileExtension(filename) {
+  return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined;
+}
