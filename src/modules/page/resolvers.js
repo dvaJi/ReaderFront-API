@@ -1,9 +1,14 @@
 import path from 'path';
 
 // App Imports
+import {
+  getByChapterAndFilename as getThumbLog,
+  remove as removeThumbLog
+} from '../thumbs-log/resolvers';
 import { moveImage, removeTempImage } from '../../setup/thumbnails';
 import params from '../../config/params';
 import models from '../../setup/models';
+import { getFileExtension } from '../../setup/utils';
 
 // Get pages by chapter
 export async function getByChapter(parentValue, { chapterId }) {
@@ -119,7 +124,23 @@ export async function remove(parentValue, { id }, { auth }) {
         workDir,
         chapDir
       );
-      await removeTempImage(pageDir + '/' + pageDetails.filename);
+      await removeTempImage(path.join(pageDir, pageDetails.filename));
+
+      // Try to find and delete the image from thumbs_logs
+      try {
+        const fileExtension = getFileExtension(pageDetails.filename);
+        const newFilename = pageDetails.filename.replace(fileExtension, 'webp');
+        const thumblog = await getThumbLog(undefined, {
+          filename: newFilename,
+          chapterDir: chapDir
+        });
+        const thumblogDetail = thumblog.get();
+
+        await removeThumbLog(undefined, { id: thumblogDetail.id });
+      } catch (err) {
+        console.log(err);
+      }
+
       return await models.Page.destroy({ where: { id } });
     }
   } else {

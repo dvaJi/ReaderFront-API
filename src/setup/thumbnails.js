@@ -12,6 +12,7 @@ import {
 
 // App imports
 import { create as createThumbLog } from '../modules/thumbs-log/resolvers';
+import { getFileExtension } from './utils';
 
 /**
  * Generate a Thumbnail
@@ -56,7 +57,7 @@ export async function createThumbnail(
       return await createReadStream(newImageDir);
     }
 
-    await sharp(path.join(thumbPath, filename))
+    const thumbResult = await sharp(path.join(thumbPath, filename))
       .resize(type.width, type.height)
       .toFile(newImageDir)
       .then(data => {
@@ -70,7 +71,7 @@ export async function createThumbnail(
     // Create a new thumb log
     await createThumbLog(undefined, {
       filename: type.name + '_' + filename,
-      size: 0,
+      size: thumbResult.size,
       workDir: directory.workDir,
       chapterDir: directory.chapterDir
     });
@@ -137,14 +138,14 @@ export async function convertToWebp(directory, filename, thumbdir) {
     });
 
     // If not, then create the webp image
-    await sharp(imagePath)
+    const thumbResult = await sharp(imagePath)
       .webp()
       .toFile(newImagePath);
 
     // Create a new thumb log
     await createThumbLog(undefined, {
       filename: newFilename,
-      size: 0,
+      size: thumbResult.size,
       workDir: thumbdir.workDir,
       chapterDir: thumbdir.chapterDir
     });
@@ -264,12 +265,4 @@ export async function getThumbPath(type, thumbPath) {
       console.error('Type ' + type + ' not found');
       return null;
   }
-}
-
-/**
- * Get extension from a file
- * @param {*} filename
- */
-function getFileExtension(filename) {
-  return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined;
 }

@@ -9,7 +9,11 @@ import {
   getDefaultThumbnail,
   getOriginalImage
 } from './thumbnails';
-import { cleanThumbs } from './operations';
+import {
+  getAllByDate as ThumbLog,
+  remove as removeThumbLog
+} from '../modules/thumbs-log/resolvers';
+import { forEachSeries } from './utils';
 import params from '../config/params.json';
 
 // File upload configurations and route
@@ -124,7 +128,11 @@ export default function(server) {
     const endDate = subDays(new Date(), daysToPreserve);
     const startDate = subYears(endDate, 1);
 
-    await cleanThumbs(startDate, endDate);
+    const thumbslogs = await ThumbLog(undefined, { startDate, endDate });
+
+    await forEachSeries(thumbslogs, async thumb => {
+      await removeThumbLog(undefined, { id: thumb.id });
+    });
 
     response.send('Done!');
   });
