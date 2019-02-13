@@ -51,15 +51,36 @@ export async function getAllByDate(parentValue, { startDate, endDate }) {
 // Get chapter by work
 export async function getByWork(
   parentValue,
-  { workStub, language, showHidden }
+  { workStub, language, showHidden },
+  req,
+  { fieldNodes }
 ) {
+  const order = [['chapter', 'ASC'], ['subchapter', 'ASC']];
+  const fields = fieldNodes[0].selectionSet.selections.map(
+    selection => selection.name.value
+  );
+  const includePages = fields.includes('pages');
+  const pages = includePages
+    ? {
+        join: [
+          {
+            model: models.Page,
+            as: 'pages'
+          }
+        ],
+        order: { order: [...order, [models.Page, 'filename']] }
+      }
+    : {
+        join: {},
+        order: { order: order }
+      };
   return await models.Chapter.findAll({
     ...where(showHidden, language),
     include: [
       { model: models.Works, as: 'work', where: { stub: workStub } },
-      { model: models.Page, as: 'pages' }
+      ...pages.join
     ],
-    order: [[models.Page, 'filename']]
+    ...pages.order
   });
 }
 
@@ -72,6 +93,25 @@ export async function getById(parentValue, { id, showHidden }) {
     ...where,
     include: [
       { model: models.Works, as: 'work' },
+      { model: models.Page, as: 'pages' }
+    ],
+    order: [[models.Page, 'filename']]
+  });
+}
+
+// Get chapter by work stub, chapter + subchapter + volume + language
+export async function getWithPagesByWorkStubAndChapter(
+  parentValue,
+  { workStub, language, volume, chapter, subchapter, showHidden }
+) {
+  let where = { where: { chapter, subchapter, volume, language } };
+  if (!showHidden) {
+    where.where.hidden = false;
+  }
+  return await models.Chapter.findOne({
+    ...where,
+    include: [
+      { model: models.Works, as: 'work', where: { stub: workStub } },
       { model: models.Page, as: 'pages' }
     ],
     order: [[models.Page, 'filename']]
