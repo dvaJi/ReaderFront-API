@@ -8,7 +8,12 @@ import {
 
 // App Imports
 import { ChapterType } from './types';
-import { getAll, getByWork, getById } from './resolvers';
+import {
+  getAll,
+  getByWork,
+  getById,
+  getWithPagesByWorkStubAndChapter
+} from './resolvers';
 
 // Chapters All
 export const chapters = {
@@ -42,4 +47,18 @@ export const chapterById = {
     showHidden: { type: GraphQLBoolean }
   },
   resolve: getById
+};
+
+// Chapter By Work Stub + Chapter
+export const chapterByWorkAndChapter = {
+  type: ChapterType,
+  args: {
+    workStub: { type: GraphQLString },
+    language: { type: GraphQLInt },
+    volume: { type: GraphQLInt },
+    chapter: { type: GraphQLInt },
+    subchapter: { type: GraphQLInt },
+    showHidden: { type: GraphQLBoolean }
+  },
+  resolve: getWithPagesByWorkStubAndChapter
 };
