@@ -46,7 +46,7 @@
     "prettier": "^1.15.2",
     "pretty-quick": "^1.8.0",
     "sequelize-test-utils": "^0.3.0",
-    "standard-version": "^4.4.0"
+    "standard-version": "^5.0.0"
   },
   "dependencies": {
     "archiver": "^3.0.0",
