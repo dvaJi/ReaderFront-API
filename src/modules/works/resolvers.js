@@ -36,7 +36,7 @@ export async function getAll(
           include: [{ model: models.Page, as: 'pages' }]
         }
       ]
-    : {};
+    : [];
 
   return await models.Works.findAll({
     order: [[sortBy, orderBy]],
@@ -139,7 +139,7 @@ export async function getRandom(
           include: [{ model: models.Page, as: 'pages' }]
         }
       ]
-    : {};
+    : [];
 
   return await models.Works.findOne({
     limit: 1,

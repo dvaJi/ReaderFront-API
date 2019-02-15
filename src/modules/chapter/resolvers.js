@@ -71,7 +71,7 @@ export async function getByWork(
         order: { order: [...order, [models.Page, 'filename']] }
       }
     : {
-        join: {},
+        join: [],
         order: { order: order }
       };
   return await models.Chapter.findAll({
