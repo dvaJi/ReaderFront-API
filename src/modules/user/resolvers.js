@@ -171,18 +171,30 @@ export async function login(parentValue, { email, password }, { clientIp }) {
 }
 
 // Get by ID
-export async function getById(parentValue, { id }) {
-  return await models.User.findOne({ where: { id } });
+export async function getById(parentValue, { id }, { auth }) {
+  if (auth.user && auth.user.role === params.user.roles.admin) {
+    return await models.User.findOne({ where: { id } });
+  } else {
+    throw new Error('Operation denied.');
+  }
 }
 
 // Get all
-export async function getAll() {
-  return await models.User.findAll();
+export async function getAll(parentValue, fields, { auth }) {
+  if (auth.user && auth.user.role === params.user.roles.admin) {
+    return await models.User.findAll();
+  } else {
+    throw new Error('Operation denied.');
+  }
 }
 
 // Delete
-export async function remove(parentValue, { id }) {
-  return await models.User.destroy({ where: { id } });
+export async function remove(parentValue, { id }, { auth }) {
+  if (auth.user && auth.user.role === params.user.roles.admin) {
+    return await models.User.destroy({ where: { id } });
+  } else {
+    throw new Error('Operation denied.');
+  }
 }
 
 // User genders
