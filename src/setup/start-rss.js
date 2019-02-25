@@ -53,18 +53,16 @@ async function generateFeed(chapters) {
   });
 
   for (const chapter of chapters) {
+    const title = generateChapterTitle(chapter);
+    const url = generateChapterUrl(chapter, APP_URL);
+    const thumb = generateThumbnailUrl(chapter, API_URL);
     await feedConfig.addItem({
-      title: generateChapterTitle(chapter),
-      id: generateChapterUrl(chapter, APP_URL),
-      link: generateChapterUrl(chapter, APP_URL),
-      description: chapter.description,
-      /*author: [
-        {
-          name: 'MANGAKA',
-        }
-      ],*/
+      title: title,
+      id: url,
+      link: url,
+      description: `<a href="${url}">${title}</a> - <a href="${thumb}">thumb</a>`,
       date: chapter.releaseDate,
-      image: generateThumbnailUrl(chapter, API_URL)
+      image: thumb
     });
   }
 
@@ -72,19 +70,17 @@ async function generateFeed(chapters) {
 }
 
 function generateChapterTitle(chapter) {
-  if (chapter.name !== null && chapter.name !== '') {
-    return (
-      chapter.work.name +
-      ' V.' +
-      chapter.volume +
-      ' C.' +
-      chapter.chapter +
-      ': ' +
-      chapter.name
-    );
-  } else {
-    return chapter.work.name + ' V.' + chapter.volume + ' C.' + chapter.chapter;
+  let title = chapter.work.name + ' C.' + chapter.chapter;
+
+  if (chapter.subchapter !== 0) {
+    title += '.' + chapter.subchapter;
   }
+
+  if (chapter.name !== null && chapter.name !== '') {
+    title += ': ' + chapter.name;
+  }
+
+  return title;
 }
 
 function generateChapterUrl(chapter, frontendBaseUrl) {
