@@ -53,14 +53,14 @@ async function generateFeed(chapters) {
   });
 
   for (const chapter of chapters) {
-    const title = generateChapterTitle(chapter);
+    const title = generateChapterTitle(chapter, chapter.language);
     const url = generateChapterUrl(chapter, APP_URL);
     const thumb = generateThumbnailUrl(chapter, API_URL);
     await feedConfig.addItem({
       title: title,
       id: url,
       link: url,
-      description: `<a href="${url}">${title}</a> - <a href="${thumb}">thumb</a>`,
+      description: chapter.description,
       date: chapter.releaseDate,
       image: thumb
     });
@@ -69,8 +69,20 @@ async function generateFeed(chapters) {
   return feedConfig;
 }
 
-function generateChapterTitle(chapter) {
-  let title = chapter.work.name + ' C.' + chapter.chapter;
+const translation = {
+  '1': {
+    chapter: 'Capítulo ',
+    volume: 'Tomo'
+  },
+  '2': {
+    chapter: 'Chapter ',
+    volume: 'Volume'
+  }
+};
+
+function generateChapterTitle(chapter, lang) {
+  let title =
+    chapter.work.name + ' - ' + translation[lang].chapter + chapter.chapter;
 
   if (chapter.subchapter !== 0) {
     title += '.' + chapter.subchapter;
