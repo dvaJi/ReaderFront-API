@@ -1,8 +1,12 @@
+import { Op } from 'sequelize';
 import path from 'path';
 import archiver from 'archiver';
-import { createWriteStream, createReadStream } from 'fs-extra';
+import {
+  createWriteStream,
+  createReadStream,
+  remove as fsRemove
+} from 'fs-extra';
 
-import params from '../../config/params';
 import models from '../../setup/models';
 import { generateChapterDir } from '../../setup/utils';
 
@@ -11,6 +15,17 @@ export async function getByChapterId(chapterId) {
   return await models.Archive.findOne({
     where: { chapterId },
     include: [{ model: models.Chapter, as: 'chapter' }]
+  });
+}
+
+// Get Archive by date
+export async function getByDate(date) {
+  return await models.Archive.findAll({
+    where: {
+      lastDownload: {
+        [Op.lt]: date
+      }
+    }
   });
 }
 
@@ -40,18 +55,28 @@ export async function update({ id, chapterId, filename, size, lastDownload }) {
 }
 
 // Delete
-export async function remove(parentValue, { id }, { auth }) {
-  if (auth.user && auth.user.role === params.user.roles.admin) {
-    const archive = await models.Archive.findOne({ where: { id } });
+export async function remove(parentValue, { id }) {
+  const archive = await models.Archive.findOne({
+    where: { id },
+    include: [
+      {
+        model: models.Chapter,
+        as: 'chapter',
+        include: [{ model: models.Works, as: 'work' }]
+      }
+    ]
+  });
 
-    if (!archive) {
-      // Archive does not exists
-      throw new Error('The archive does not exists.');
-    } else {
-      return await models.Archive.destroy({ where: { id } });
-    }
+  if (!archive) {
+    // Archive does not exists
+    throw new Error('The archive does not exists.');
   } else {
-    throw new Error('Operation denied.');
+    // Delete the file first
+    const fullPath = await getArchivePath(archive);
+
+    await fsRemove(fullPath);
+
+    return await models.Archive.destroy({ where: { id } });
   }
 }
 

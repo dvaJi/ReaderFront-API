@@ -1,13 +1,18 @@
+import subDays from 'date-fns/sub_days';
+
 // App Imports
 import {
   getByChapterId as getArchiveByChapterId,
+  getByDate,
   createArchiveZip,
   updateArchiveZip,
   update as updateArchive,
   create as createArchive,
   getArchivePath,
-  updateLastDownload
+  updateLastDownload,
+  remove as removeArchive
 } from '../modules/archive/resolvers';
+import { forEachSeries } from './utils';
 import { getLatestPage } from '../modules/page/resolvers';
 
 // File upload configurations and route
@@ -46,5 +51,16 @@ export default function(server) {
       const archivePath = await getArchivePath(newArchive);
       return response.download(archivePath);
     }
+  });
+
+  server.get('/clean_archives', async (request, response) => {
+    const date = subDays(new Date(), 7);
+    const archives = await getByDate(date);
+
+    await forEachSeries(archives, async archive => {
+      await removeArchive(undefined, { id: archive.id });
+    });
+
+    response.send('Done!');
   });
 }
