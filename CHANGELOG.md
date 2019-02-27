@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/dvaJi/ReaderFront-API/compare/v0.2.0...v0.3.0) (2019-02-25)
+
+
+### Bug Fixes
+
+* add file size limit ([#30](https://github.com/dvaJi/ReaderFront-API/issues/30)) ([773fcc9](https://github.com/dvaJi/ReaderFront-API/commit/773fcc9))
+* allow to configure graphiql and database logging from env ([c2f34a5](https://github.com/dvaJi/ReaderFront-API/commit/c2f34a5))
+* chapter url didn't work for rss ([d2611e2](https://github.com/dvaJi/ReaderFront-API/commit/d2611e2))
+* chapters are sorted correctly with the column releaseDate ([#32](https://github.com/dvaJi/ReaderFront-API/issues/32)) ([c32f466](https://github.com/dvaJi/ReaderFront-API/commit/c32f466))
+* set uniqid after create chapter ([#26](https://github.com/dvaJi/ReaderFront-API/issues/26)) ([c2c244b](https://github.com/dvaJi/ReaderFront-API/commit/c2c244b))
+* thumb_logs were not being removed when a page was deleted from admincp ([#34](https://github.com/dvaJi/ReaderFront-API/issues/34)) ([504c3f7](https://github.com/dvaJi/ReaderFront-API/commit/504c3f7))
+* use node env as second option to use graphiql ([3a3e3f4](https://github.com/dvaJi/ReaderFront-API/commit/3a3e3f4))
+* **package:** update nodemailer to version 5.1.1 ([722e8ab](https://github.com/dvaJi/ReaderFront-API/commit/722e8ab))
+* **user:** only administrator can fetch users data ([#40](https://github.com/dvaJi/ReaderFront-API/issues/40)) ([ad0f8fe](https://github.com/dvaJi/ReaderFront-API/commit/ad0f8fe))
+
+
+### Features
+
+* **reader:** add new query and chapter getByWork will fetch pages only if pages is given in fields ([#37](https://github.com/dvaJi/ReaderFront-API/issues/37)) ([d5c4c73](https://github.com/dvaJi/ReaderFront-API/commit/d5c4c73))
+* better feed configuration ([#41](https://github.com/dvaJi/ReaderFront-API/issues/41)) ([a72e6d3](https://github.com/dvaJi/ReaderFront-API/commit/a72e6d3))
+* new feed links (rss, json and atom) ([206bf7b](https://github.com/dvaJi/ReaderFront-API/commit/206bf7b))
+
+
+### Performance Improvements
+
+* **works:** improve resolvers to only use joins when are necessary ([#27](https://github.com/dvaJi/ReaderFront-API/issues/27)) ([c4c47d5](https://github.com/dvaJi/ReaderFront-API/commit/c4c47d5))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/dvaJi/ReaderFront-API/compare/v0.1.0...v0.2.0) (2018-11-11)
 
