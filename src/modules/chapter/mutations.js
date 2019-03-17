@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
 
 // App Imports
 import { ChapterType } from './types';
-import { create, update, updateThumb, remove } from './resolvers';
+import { create, update, updateDefaultThumbnail, remove } from './resolvers';
 
 // Chapter create
 export const chapterCreate = {
@@ -158,7 +158,7 @@ export const chapterThumbUpdate = {
       type: GraphQLString
     }
   },
-  resolve: updateThumb
+  resolve: updateDefaultThumbnail
 };
 
 // Chapter remove
