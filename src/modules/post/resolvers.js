@@ -3,11 +3,7 @@ import path from 'path';
 import uuidv1 from 'uuid/v1';
 
 // App Imports
-import {
-  moveImage,
-  removeTempImage,
-  createThumbnail
-} from '../../setup/thumbnails';
+import { deleteImage, moveImage } from '../../setup/images-helpers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -71,7 +67,6 @@ export async function create(
   if (auth.user && auth.user.role === params.user.roles.admin) {
     uniqid = uuidv1();
     if (thumbnail) {
-      const postDir = stub + '_' + uniqid;
       const tempDir = path.join(
         __dirname,
         '..',
@@ -89,19 +84,10 @@ export async function create(
         'public',
         'images',
         'blog',
-        postDir
+        uniqid
       );
 
       await moveImage(tempDir, newDir, thumbnail);
-
-      const coversTypes = Object.keys(params.works.cover_type)
-        .filter(c => c !== 'portrait')
-        .map(c => params.works.cover_type[c]);
-
-      for (const coverType of coversTypes) {
-        await createThumbnail(thumbnail, newDir, coverType, false);
-        await createThumbnail(thumbnail, newDir, coverType, true);
-      }
     }
     return await models.Post.create({
       userId,
@@ -148,7 +134,6 @@ export async function update(
     });
     const postDetail = await post.get();
     if (thumbnail !== postDetail.thumbnail) {
-      const postDir = stub + '_' + uniqid;
       const tempDir = path.join(
         __dirname,
         '..',
@@ -166,7 +151,7 @@ export async function update(
         'public',
         'images',
         'blog',
-        postDir
+        uniqid
       );
 
       await moveImage(tempDir, newDir, thumbnail);
@@ -203,7 +188,6 @@ export async function remove(parentValue, { id }, { auth }) {
     } else {
       const postDetail = await post.get();
       if (postDetail.thumbnail) {
-        const postDir = postDetail.stub + '_' + postDetail.uniqid;
         const directory = path.join(
           __dirname,
           '..',
@@ -212,10 +196,10 @@ export async function remove(parentValue, { id }, { auth }) {
           'public',
           'images',
           'blog',
-          postDir,
+          postDetail.uniqid,
           postDetail.thumbnail
         );
-        await removeTempImage(directory);
+        await deleteImage(directory);
       }
       return await models.Post.destroy({ where: { id } });
     }

@@ -12,7 +12,7 @@ const languages = Object.keys(params.global.languages).map(
 
 // File upload configurations and route
 export default function(server) {
-  console.info('SETUP - RSS...');
+  console.info('SETUP - Feeds...');
 
   // Thumbnail route
   server.get('/feed/:feed/:lang', async (request, response) => {
