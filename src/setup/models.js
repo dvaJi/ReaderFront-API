@@ -16,7 +16,6 @@ const models = {
   Works: databaseConnection.import('../modules/works/model'),
   Chapter: databaseConnection.import('../modules/chapter/model'),
   Post: databaseConnection.import('../modules/post/model'),
-  Preference: databaseConnection.import('../modules/preferences/model'),
   Archive: databaseConnection.import('../modules/archive/model')
 };
 
