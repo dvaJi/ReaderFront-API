@@ -8,7 +8,18 @@ import { createDescriptions } from '../works-description/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
-const where = showHidden => (showHidden ? {} : { where: { hidden: false } });
+const where = (showHidden, language) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return {};
+  }
+
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden ? {} : { hidden: false };
+
+  return { where: { ...sHidden, ...oLanguage } };
+};
+
 const whereCond = showHidden => (showHidden ? {} : { hidden: false });
 
 // Get all works
@@ -26,7 +37,7 @@ export async function getAll(
     ? [
         {
           model: models.Chapter,
-          ...where(showHidden),
+          ...where(showHidden, language),
           as: 'chapters',
           include: [{ model: models.Page, as: 'pages' }]
         }
@@ -60,7 +71,7 @@ export async function getByStub(parentValue, { stub, language, showHidden }) {
     include: [
       {
         model: models.Chapter,
-        ...where(showHidden),
+        ...where(showHidden, language),
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
@@ -129,7 +140,7 @@ export async function getRandom(
     ? [
         {
           model: models.Chapter,
-          where: { hidden: false },
+          ...where(false, language),
           as: 'chapters',
           include: [{ model: models.Page, as: 'pages' }]
         }
