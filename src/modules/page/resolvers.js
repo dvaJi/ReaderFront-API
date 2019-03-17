@@ -1,14 +1,9 @@
 import path from 'path';
 
 // App Imports
-import {
-  getByChapterAndFilename as getThumbLog,
-  remove as removeThumbLog
-} from '../thumbs-log/resolvers';
-import { moveImage, removeTempImage } from '../../setup/thumbnails';
+import { deleteImage, moveImage } from '../../setup/images-helpers';
 import params from '../../config/params';
 import models from '../../setup/models';
-import { getFileExtension } from '../../setup/utils';
 
 // Get pages by chapter
 export async function getByChapter(parentValue, { chapterId }) {
@@ -43,8 +38,6 @@ export async function create(
       'images',
       'uploads'
     );
-    const workDir = chapterDetails.work.stub + '_' + chapterDetails.work.uniqid;
-    const chapDir = chapterDetails.stub + '_' + chapterDetails.uniqid;
     const newDir = path.join(
       __dirname,
       '..',
@@ -52,8 +45,8 @@ export async function create(
       '..',
       'public',
       'works',
-      workDir,
-      chapDir
+      chapterDetails.work.uniqid,
+      chapterDetails.uniqid
     );
     await moveImage(oldDir, newDir, filename);
     return await models.Page.create({
@@ -110,10 +103,6 @@ export async function remove(parentValue, { id }, { auth }) {
         include: [{ model: models.Works, as: 'work' }]
       });
       const chapterDetails = await chapter.get();
-      // TODO: Helpers to avoid creating dir every time
-      const workDir =
-        chapterDetails.work.stub + '_' + chapterDetails.work.uniqid;
-      const chapDir = chapterDetails.stub + '_' + chapterDetails.uniqid;
       const pageDir = path.join(
         __dirname,
         '..',
@@ -121,25 +110,10 @@ export async function remove(parentValue, { id }, { auth }) {
         '..',
         'public',
         'works',
-        workDir,
-        chapDir
+        chapterDetails.work.uniqid,
+        chapterDetails.uniqid
       );
-      await removeTempImage(path.join(pageDir, pageDetails.filename));
-
-      // Try to find and delete the image from thumbs_logs
-      try {
-        const fileExtension = getFileExtension(pageDetails.filename);
-        const newFilename = pageDetails.filename.replace(fileExtension, 'webp');
-        const thumblog = await getThumbLog(undefined, {
-          filename: newFilename,
-          chapterDir: chapDir
-        });
-        const thumblogDetail = thumblog.get();
-
-        await removeThumbLog(undefined, { id: thumblogDetail.id });
-      } catch (err) {
-        console.error(err);
-      }
+      await deleteImage(path.join(pageDir, pageDetails.filename));
 
       return await models.Page.destroy({ where: { id } });
     }

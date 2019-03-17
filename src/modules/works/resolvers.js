@@ -3,12 +3,7 @@ import path from 'path';
 import { Sequelize } from 'sequelize';
 
 // App Imports
-import {
-  moveThumbnails,
-  moveImage,
-  createThumbnail,
-  removeTempImage
-} from '../../setup/thumbnails';
+import { deleteImage, moveImage } from '../../setup/images-helpers';
 import { createDescriptions } from '../works-description/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
@@ -196,7 +191,7 @@ export async function create(
       visits
     }).then(async work => {
       const workdetails = await work.get();
-      const covers = createWorkCover(workdetails, thumbnail);
+      await createWorkCover(workdetails, thumbnail);
 
       const descriptions = createDescriptions(
         works_descriptions,
@@ -204,7 +199,6 @@ export async function create(
       );
 
       workdetails.works_descriptions = descriptions;
-      workdetails.work_covers = covers;
 
       return workdetails;
     });
@@ -254,31 +248,8 @@ export async function update(
       { where: { id } }
     ).then(async () => {
       const oldWorkDetail = oldWork.get();
-      const oldWorkDir = oldWorkDetail.stub + '_' + oldWorkDetail.uniqid;
-      const oldDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'works',
-        oldWorkDir
-      );
-      const workDir = stub + '_' + uniqid;
-      const newDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'works',
-        workDir
-      );
-
-      let isNewCover = thumbnail !== oldWorkDetail.thumbnail;
-      if (isNewCover && thumbnail === null) {
-        await moveThumbnails(oldDir, newDir);
-      } else if (isNewCover) {
+      const isNewCover = thumbnail !== oldWorkDetail.thumbnail;
+      if (isNewCover) {
         const newWork = await models.Works.findOne({ where: { id } });
         await createWorkCover(newWork, thumbnail);
       }
@@ -339,7 +310,6 @@ export async function getAggregates(
 }
 
 export async function createWorkCover(work, filename) {
-  const workDir = work.stub + '_' + work.uniqid;
   const tempDir = path.join(
     __dirname,
     '..',
@@ -356,29 +326,15 @@ export async function createWorkCover(work, filename) {
     '..',
     'public',
     'works',
-    workDir
+    work.uniqid
   );
 
   await moveImage(tempDir, newDir, filename);
 
-  const coversTypes = Object.keys(params.works.cover_type)
-    .filter(c => c !== 'portrait')
-    .map(c => params.works.cover_type[c]);
-
-  for (const coverType of coversTypes) {
-    await createThumbnail(filename, newDir, coverType, false);
-    await createThumbnail(
-      coverType.name + '_' + filename,
-      newDir,
-      coverType,
-      true
-    );
-  }
-
   // Delete temp image
-  await removeTempImage(path.join(tempDir, filename));
+  await deleteImage(path.join(tempDir, filename));
 
-  return coversTypes;
+  return true;
 }
 
 const descriptionJoin = lang =>

@@ -7,9 +7,6 @@ import path from 'path';
  * @param {*} filename Optional
  */
 export function generateChapterDir(chapter, work, filename) {
-  const workDir = work.stub + '_' + work.uniqid;
-  const chapDir = chapter.stub + '_' + chapter.uniqid;
-
   // If filename is undefined, just return directory
   if (filename === undefined) {
     return path.join(
@@ -18,8 +15,8 @@ export function generateChapterDir(chapter, work, filename) {
       '..',
       'public',
       'works',
-      workDir,
-      chapDir
+      work.uniqid,
+      chapter.uniqid
     );
   } else {
     return path.join(
@@ -28,8 +25,8 @@ export function generateChapterDir(chapter, work, filename) {
       '..',
       'public',
       'works',
-      workDir,
-      chapDir,
+      work.uniqid,
+      chapter.uniqid,
       filename
     );
   }

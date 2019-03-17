@@ -17,8 +17,7 @@ const models = {
   Chapter: databaseConnection.import('../modules/chapter/model'),
   Post: databaseConnection.import('../modules/post/model'),
   Preference: databaseConnection.import('../modules/preferences/model'),
-  Archive: databaseConnection.import('../modules/archive/model'),
-  ThumbsLog: databaseConnection.import('../modules/thumbs-log/model')
+  Archive: databaseConnection.import('../modules/archive/model')
 };
 
 Object.keys(models).forEach(modelName => {
