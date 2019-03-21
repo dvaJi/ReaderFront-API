@@ -77,7 +77,7 @@
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "date-fns": "^1.30.1",
-    "dotenv": "^6.2.0",
+    "dotenv": "^7.0.0",
     "express": "^5.0.0-alpha.7",
     "express-graphql": "^0.7.1",
     "feed": "^2.0.4",
@@ -94,7 +94,6 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "sequelize": "^5.1.0",
     "sequelize-cli": "^5.4.0",
-    "sharp": "^0.21.3",
     "uuid": "^3.3.2",
     "snyk": "^1.134.2"
   },
