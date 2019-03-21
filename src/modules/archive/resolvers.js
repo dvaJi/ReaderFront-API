@@ -234,8 +234,6 @@ export async function getArchivePath(archive) {
 
   const chapterDetail = await chapter.get();
   const work = chapterDetail.work;
-  const workPath = work.stub + '_' + work.uniqid;
-  const chapterPath = chapter.stub + '_' + chapter.uniqid;
   return path.join(
     __dirname,
     '..',
@@ -243,8 +241,8 @@ export async function getArchivePath(archive) {
     '..',
     'public',
     'works',
-    workPath,
-    chapterPath,
+    work.uniqid,
+    chapter.uniqid,
     archive.filename
   );
 }

@@ -1,8 +1,13 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.13.3
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-LODASH-73638:
+    - nodemailer-sendgrid-transport > sendgrid > lodash:
+        reason: None given
+        expires: '2019-04-20T01:03:02.422Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:lodash:20180130':
     - nodemailer-sendgrid-transport > sendgrid > lodash:
-        patched: '2019-02-25T01:41:11.380Z'
+        patched: '2019-03-21T01:00:50.557Z'
