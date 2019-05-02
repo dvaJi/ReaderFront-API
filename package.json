@@ -95,7 +95,7 @@
     "sequelize": "^5.7.4",
     "sequelize-cli": "^5.4.0",
     "uuid": "^3.3.2",
-    "snyk": "^1.151.2"
+    "snyk": "^1.156.0"
   },
   "husky": {
     "hooks": {
