@@ -65,7 +65,7 @@
     "jest": "^24.8.0",
     "nodemon": "^1.19.0",
     "prettier": "^1.17.1",
-    "pretty-quick": "^1.10.0",
+    "pretty-quick": "^1.11.0",
     "sequelize-test-utils": "^0.3.0",
     "standard-version": "^5.0.2"
   },
