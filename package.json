@@ -92,7 +92,7 @@
     "mysql2": "^1.6.5",
     "nodemailer": "^6.2.1",
     "nodemailer-sendgrid-transport": "^0.2.0",
-    "sequelize": "^5.8.6",
+    "sequelize": "^5.8.8",
     "sequelize-cli": "^5.4.0",
     "uuid": "^3.3.2",
     "snyk": "^1.151.2"
