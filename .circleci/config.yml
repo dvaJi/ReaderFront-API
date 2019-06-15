@@ -1,39 +1,89 @@
 version: 2
-jobs:
-  test:
-    docker:
-      - image: circleci/node:8.11.3
-    working_directory: ~/repo
 
+defaults: &defaults
+  working_directory: ~/reader-front-api
+  docker:
+    - image: circleci/node:10.16.0
+  environment:
+    TZ: '/usr/share/zoneinfo/America/Los_Angeles'
+
+aliases:
+  # Circle related commands
+  - &restore-cache
+    keys:
+      # Find a cache corresponding to this specific package.json checksum
+      # when this file is changed, this key will fail
+      - reader-front-api-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+      - reader-front-api-{{ checksum "yarn.lock" }}
+      # Find the most recent cache used from any branch
+      - reader-front-api-
+  - &save-cache
+      key: reader-front-api-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+      paths:
+        - ~/.cache/yarn
+        - node_modules
+  # Yarn commands
+  - &yarn
+    name: Install Dependencies
+    command: yarn install --frozen-lockfile --non-interactive --cache-folder=~/.cache/yarn
+  - &lint
+    name: Lint
+    command: yarn lint
+  - &test
+    name: Test
+    command: yarn test --maxWorkers=2
+  - &build-app
+    name: Building app
+    command: yarn build:prod
+
+jobs:
+  install:
+    <<: *defaults
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "yarn.lock" }}
-          - v1-dependencies-
-      - run: yarn install
-      - save_cache:
+      - restore_cache: *restore-cache
+      - run: date
+      - run: *yarn
+      - save_cache: *save-cache
+      - persist_to_workspace:
+          root: .
           paths:
-            - ~/.cache/yarn
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
-      - run: yarn test
-  build:
-    docker:
-      - image: circleci/node:8.11.3
-    working_directory: ~/repo
+            - .
+  lint:
+    <<: *defaults
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "yarn.lock" }}
-          - v1-dependencies-
-      - run: yarn install
-      - run: yarn build:prod
+      - attach_workspace:
+          at: ~/reader-front-api
+      - run: *lint
+  test:
+    <<: *defaults
+    parallelism: 4
+    steps:
+      - attach_workspace:
+          at: ~/reader-front-api
+      - run: *test
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/reader-front-api
+      - run: *build-app
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
 workflows:
   version: 2
-  test-and-build:
+  build_and_test:
     jobs:
-      - test
+      - install
+      - lint:
+          requires:
+            - install
+      - test:
+          requires:
+            - install
       - build:
           requires:
-            - test
+            - install
