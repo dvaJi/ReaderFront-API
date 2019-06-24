@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [0.4.0](https://github.com/dvaJi/ReaderFront-API/compare/v0.3.0...v0.4.0) (2019-06-24)
+
+
+### Bug Fixes
+
+* **package:** update dotenv to version 7.0.0 ([#45](https://github.com/dvaJi/ReaderFront-API/issues/45)) ([7b98e73](https://github.com/dvaJi/ReaderFront-API/commit/7b98e73))
+* .snyk & package.json to reduce vulnerabilities ([#42](https://github.com/dvaJi/ReaderFront-API/issues/42)) ([fcb5aff](https://github.com/dvaJi/ReaderFront-API/commit/fcb5aff))
+* chapters are not being filtered by language in Work view ([#49](https://github.com/dvaJi/ReaderFront-API/issues/49)) ([22f5447](https://github.com/dvaJi/ReaderFront-API/commit/22f5447))
+* downloads still using old path ([#51](https://github.com/dvaJi/ReaderFront-API/issues/51)) ([966f458](https://github.com/dvaJi/ReaderFront-API/commit/966f458))
+* **package:** update sequelize to version 5.1.0 ([#46](https://github.com/dvaJi/ReaderFront-API/issues/46)) ([af3bfad](https://github.com/dvaJi/ReaderFront-API/commit/af3bfad))
+
+
+### Features
+
+* implement endpoint to delete old archives ([#43](https://github.com/dvaJi/ReaderFront-API/issues/43)) ([ac272c5](https://github.com/dvaJi/ReaderFront-API/commit/ac272c5))
+* implement usage of CDNs for images ([#47](https://github.com/dvaJi/ReaderFront-API/issues/47)) ([78b860c](https://github.com/dvaJi/ReaderFront-API/commit/78b860c))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/dvaJi/ReaderFront-API/compare/v0.2.0...v0.3.0) (2019-02-25)
 
