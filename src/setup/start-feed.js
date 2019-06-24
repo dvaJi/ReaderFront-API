@@ -16,7 +16,17 @@ export default function(server) {
 
   // Thumbnail route
   server.get('/feed/:feed/:lang', async (request, response) => {
-    const language = request.params.lang;
+    const reqLang = request.params.lang;
+    let language = -1;
+    if (isNaN(parseInt(reqLang, 0))) {
+      var languageFound = languages.find(ln => ln.name === reqLang);
+      if (languageFound) {
+        language = languageFound.id;
+      }
+    } else {
+      language = reqLang;
+    }
+
     const feed = request.params.feed;
     let chapters = await getAllRSS({
       language,
@@ -44,7 +54,7 @@ async function generateFeed(chapters) {
     title: REACT_APP_APP_TITLE,
     id: APP_URL,
     link: APP_URL,
-    updated: chapters ? chapters[0].releaseDate : new Date(),
+    updated: chapters[0] ? chapters[0].releaseDate : new Date(),
     generator: 'ReaderFront',
     author: {
       name: 'dvaJi',
@@ -113,18 +123,6 @@ function generateChapterUrl(chapter, frontendBaseUrl) {
 }
 
 function generateThumbnailUrl(chapter, baseUrl) {
-  return (
-    baseUrl +
-    'covers/chapter/' +
-    chapter.work.stub +
-    '_' +
-    chapter.work.uniqid +
-    '/' +
-    chapter.stub +
-    '_' +
-    chapter.uniqid +
-    '/' +
-    chapter.thumbnail +
-    '?size=medium'
-  );
+  const { work, uniqid, thumbnail } = chapter;
+  return `${baseUrl}works/${work.uniqid}/${uniqid}/${thumbnail}`;
 }

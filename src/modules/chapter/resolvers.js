@@ -1,4 +1,5 @@
 import uuidv1 from 'uuid/v1';
+import { Op } from 'sequelize';
 
 // App Imports
 import params from '../../config/params';
@@ -250,11 +251,13 @@ export async function getTypes() {
 const where = (showHidden, language) => {
   const isAllLanguage = language === -1 || language === undefined;
   if (showHidden && isAllLanguage) {
-    return {};
+    return { where: { releaseDate: { [Op.lt]: new Date() } } };
   }
 
   const oLanguage = isAllLanguage ? {} : { language };
-  const sHidden = showHidden ? {} : { hidden: false };
+  const sHidden = showHidden
+    ? {}
+    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
 
   return { where: { ...sHidden, ...oLanguage } };
 };
