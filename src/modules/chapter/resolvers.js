@@ -101,6 +101,7 @@ export async function getWithPagesByWorkStubAndChapter(
   let where = { where: { chapter, subchapter, volume, language } };
   if (!showHidden) {
     where.where.hidden = false;
+    where.where.releaseDate = { [Op.lt]: new Date() };
   }
   return await models.Chapter.findOne({
     ...where,
@@ -251,7 +252,7 @@ export async function getTypes() {
 const where = (showHidden, language) => {
   const isAllLanguage = language === -1 || language === undefined;
   if (showHidden && isAllLanguage) {
-    return { where: { releaseDate: { [Op.lt]: new Date() } } };
+    return {};
   }
 
   const oLanguage = isAllLanguage ? {} : { language };

@@ -5,7 +5,6 @@ import {
   GraphQLInt,
   GraphQLBoolean
 } from 'graphql';
-import GraphQLDate from 'graphql-date';
 
 // User type
 const UserType = new GraphQLObjectType({
@@ -25,9 +24,7 @@ const UserType = new GraphQLObjectType({
     newPasswordToken: { type: GraphQLString },
     newPasswordRequested: { type: GraphQLBoolean },
     lastIp: { type: GraphQLString },
-    lastLogin: { type: GraphQLString },
-    createdAt: { type: GraphQLDate },
-    updatedAt: { type: GraphQLDate }
+    lastLogin: { type: GraphQLString }
   })
 });
 
