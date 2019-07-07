@@ -1,6 +1,6 @@
 import uuidv1 from 'uuid/v1';
 import path from 'path';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 
 // App Imports
 import { deleteImage, moveImage } from '../../setup/images-helpers';
@@ -16,6 +16,20 @@ const where = (showHidden, language) => {
 
   const oLanguage = isAllLanguage ? {} : { language };
   const sHidden = showHidden ? {} : { hidden: false };
+
+  return { where: { ...sHidden, ...oLanguage } };
+};
+
+const whereChapter = (showHidden, language) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return {};
+  }
+
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden
+    ? {}
+    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
 
   return { where: { ...sHidden, ...oLanguage } };
 };
@@ -37,7 +51,7 @@ export async function getAll(
     ? [
         {
           model: models.Chapter,
-          ...where(showHidden, language),
+          ...whereChapter(showHidden, language),
           as: 'chapters',
           include: [{ model: models.Page, as: 'pages' }]
         }
@@ -71,7 +85,7 @@ export async function getByStub(parentValue, { stub, language, showHidden }) {
     include: [
       {
         model: models.Chapter,
-        ...where(showHidden, language),
+        ...whereChapter(showHidden, language),
         as: 'chapters',
         include: [{ model: models.Page, as: 'pages' }]
       },
@@ -140,7 +154,7 @@ export async function getRandom(
     ? [
         {
           model: models.Chapter,
-          ...where(false, language),
+          ...whereChapter(false, language),
           as: 'chapters',
           include: [{ model: models.Page, as: 'pages' }]
         }
