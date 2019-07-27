@@ -164,7 +164,7 @@ export async function login(parentValue, { email, password }, { clientIp }) {
 
       return {
         user: userDetails,
-        token: jwt.sign(userDetailsToken, SECRET_KEY)
+        token: jwt.sign(userDetailsToken, SECRET_KEY, { expiresIn: '60d' })
       };
     }
   }
