@@ -19,13 +19,13 @@ export async function createDescriptions(descriptions, workId) {
   if (descriptionsArray !== undefined && workId !== undefined) {
     await models.WorksDescription.destroy({ where: { workId: workId } });
 
-    await descriptionsArray.forEach(async desc => {
-      return await models.WorksDescription.create({
-        workId,
-        language: desc.language,
-        description: desc.description
-      });
-    });
+    const descriptionsInsert = descriptionsArray.map(desc => ({
+      workId,
+      language: desc.language,
+      description: desc.description
+    }));
+
+    models.WorksDescription.bulkCreate(descriptionsInsert, { returning: true });
   } else {
     throw new Error('Operation denied.');
   }
