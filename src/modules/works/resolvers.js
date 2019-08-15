@@ -5,6 +5,7 @@ import { Sequelize, Op } from 'sequelize';
 // App Imports
 import { deleteImage, moveImage } from '../../setup/images-helpers';
 import { createDescriptions } from '../works-description/resolvers';
+import { insertGenres } from '../works-genre/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -195,12 +196,14 @@ export async function create(
     adult,
     visits,
     thumbnail,
-    works_descriptions
+    works_descriptions,
+    works_genres
   },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
     const uniqid = uuidv1();
+
     return await models.Works.create({
       name,
       stub,
@@ -218,12 +221,17 @@ export async function create(
       const workdetails = await work.get();
       await createWorkCover(workdetails, thumbnail);
 
-      const descriptions = createDescriptions(
+      // Add descriptions
+      workdetails.works_descriptions = await createDescriptions(
         works_descriptions,
         workdetails.id
       );
 
-      workdetails.works_descriptions = descriptions;
+      // Add genres
+      workdetails.works_genres = await insertGenres(
+        workdetails.id,
+        works_genres
+      );
 
       return workdetails;
     });
@@ -249,7 +257,8 @@ export async function update(
     adult,
     visits,
     thumbnail,
-    works_descriptions
+    works_descriptions,
+    works_genres
   },
   { auth }
 ) {
@@ -280,6 +289,9 @@ export async function update(
       }
 
       await createDescriptions(works_descriptions, id);
+
+      // Add genres
+      await insertGenres(id, works_genres);
     });
   } else {
     throw new Error('Operation denied.');

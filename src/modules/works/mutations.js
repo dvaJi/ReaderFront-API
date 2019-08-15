@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
+import { GraphQLJSON } from 'graphql-type-json';
 
 // App Imports
 import { WorkType } from './types';
@@ -62,6 +63,11 @@ export const workCreate = {
     works_descriptions: {
       name: 'works_descriptions',
       type: GraphQLString
+    },
+
+    works_genres: {
+      name: 'works_genres',
+      type: GraphQLJSON
     }
   },
   resolve: create
@@ -139,6 +145,11 @@ export const workUpdate = {
     works_descriptions: {
       name: 'works_descriptions',
       type: GraphQLString
+    },
+
+    works_genres: {
+      name: 'works_genres',
+      type: GraphQLJSON
     }
   },
   resolve: update
