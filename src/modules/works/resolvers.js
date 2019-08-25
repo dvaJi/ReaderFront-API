@@ -6,6 +6,7 @@ import { Sequelize, Op } from 'sequelize';
 import { deleteImage, moveImage } from '../../setup/images-helpers';
 import { createDescriptions } from '../works-description/resolvers';
 import { insertGenres } from '../works-genre/resolvers';
+import { insertStaff } from '../people-works/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -197,7 +198,8 @@ export async function create(
     visits,
     thumbnail,
     works_descriptions,
-    works_genres
+    works_genres,
+    people_works
   },
   { auth }
 ) {
@@ -233,6 +235,9 @@ export async function create(
         works_genres
       );
 
+      // Add Staff
+      await insertStaff(workdetails.id, people_works);
+
       return workdetails;
     });
   } else {
@@ -258,7 +263,8 @@ export async function update(
     visits,
     thumbnail,
     works_descriptions,
-    works_genres
+    works_genres,
+    people_works
   },
   { auth }
 ) {
@@ -292,6 +298,9 @@ export async function update(
 
       // Add genres
       await insertGenres(id, works_genres);
+
+      // Add Staff
+      await insertStaff(id, people_works);
     });
   } else {
     throw new Error('Operation denied.');

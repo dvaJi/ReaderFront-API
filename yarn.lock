@@ -2984,10 +2984,10 @@ eslint-plugin-prettier@^3.1.0:
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
-eslint-plugin-standard@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-standard/-/eslint-plugin-standard-4.0.0.tgz#f845b45109c99cd90e77796940a344546c8f6b5c"
-  integrity sha512-OwxJkR6TQiYMmt1EsNRMe5qG3GsbjlcOhbGUBY4LtavF9DsLaTcoR+j2Tdjqi23oUwKNUqX7qcn5fPStafMdlA==
+eslint-plugin-standard@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-standard/-/eslint-plugin-standard-4.0.1.tgz#ff0519f7ffaff114f76d1bd7c3996eef0f6e20b4"
+  integrity sha512-v/KBnfyaOMPmZc/dmc6ozOdWqekGp7bBGq4jLAecEfPGmfKiWS4sA8sC0LqiV9w5qmXAtXVn4M3p1jSyhY85SQ==
 
 eslint-scope@3.7.1:
   version "3.7.1"
@@ -6814,10 +6814,10 @@ sequelize@^3.24.1:
     validator "^5.2.0"
     wkx "0.2.0"
 
-sequelize@^5.15.0:
-  version "5.15.0"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.15.0.tgz#99aeb863709b5c68881ef60eb566801fae149fb1"
-  integrity sha512-w0jS4dcwLblIo284Yotb96noYrn6PUO92NtCE3VTDZxUgknfJZXfsbpsz+GqhIoE6gW1b8fsppwvk8fQTIPrlA==
+sequelize@^5.16.0:
+  version "5.16.0"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.16.0.tgz#6626f82cc41cdf02a5758f73783566e369d05cd8"
+  integrity sha512-1b2PNgxV3+HtaOCJ9gos4qQzvd8QEc5jz77MUxZg8+nqX4haSZWI7Rn0XzW1lPIRseKUXVHanyh/gqztsfJN+g==
   dependencies:
     bluebird "^3.5.0"
     cls-bluebird "^2.1.0"
@@ -7681,6 +7681,11 @@ uuid@^3.0.0, uuid@^3.1.0, uuid@^3.2.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
+
+uuid@^3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.3.tgz#4568f0216e78760ee1dbf3a4d2cf53e224112866"
+  integrity sha512-pW0No1RGHgzlpHJO1nsVrHKpOEIxkGg1xB+v0ZmdNH5OAeAwzAVrCnI2/6Mtx+Uys6iaylxa+D3g4j63IKKjSQ==
 
 v8flags@^3.1.1:
   version "3.1.2"

@@ -1,6 +1,9 @@
+import { v1 as uuidv1 } from 'uuid';
+
 // App Imports
 import params from '../../config/params';
 import models from '../../setup/models';
+import { sanitizeFilename } from '../../setup/utils';
 
 // Get all peoples
 export async function getAll(parentValue, { orderBy, first, offset }) {
@@ -14,6 +17,15 @@ export async function getAll(parentValue, { orderBy, first, offset }) {
         include: [{ model: models.Works }]
       }
     ]
+  });
+}
+
+export async function getAllByName(parentValue, { name, first, offset }) {
+  return await models.People.findAll({
+    where: { name: { like: `%${name}%` } },
+    order: [['name', 'ASC']],
+    offset: offset,
+    limit: first
   });
 }
 
@@ -34,11 +46,14 @@ export async function getByStub(parentValue, { stub }) {
 
 // Create people
 export async function create(
-  parentValue,
-  { name, name_kanji, stub, uniqid, description, twitter, thumbnail },
+  _,
+  { name, name_kanji, description, twitter, thumbnail },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    const uniqid = uuidv1();
+    const stub = sanitizeFilename(name);
+
     return await models.People.create({
       name,
       name_kanji,
@@ -55,17 +70,17 @@ export async function create(
 
 // Update people
 export async function update(
-  parentValue,
-  { id, name, name_kanji, stub, uniqid, description, twitter, thumbnail },
+  _,
+  { id, name, name_kanji, description, twitter, thumbnail },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
+    const stub = sanitizeFilename(name);
     return await models.People.update(
       {
         name,
         name_kanji,
         stub,
-        uniqid,
         description,
         twitter,
         thumbnail
@@ -78,7 +93,7 @@ export async function update(
 }
 
 // Delete people
-export async function remove(parentValue, { id }, { auth }) {
+export async function remove(_, { id }, { auth }) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
     const people = await models.People.findOne({ where: { id } });
 

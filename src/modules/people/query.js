@@ -3,7 +3,17 @@ import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 // App Imports
 import { PeopleType, PeopleRolType } from './types';
-import { getAll, getByStub, getRoles } from './resolvers';
+import { getAll, getAllByName, getByStub, getRoles } from './resolvers';
+
+export const searchPeopleByName = {
+  type: new GraphQLList(PeopleType),
+  args: {
+    name: { type: GraphQLString },
+    first: { type: GraphQLInt },
+    offset: { type: GraphQLInt }
+  },
+  resolve: getAllByName
+};
 
 // Peoples All
 export const peoples = {
