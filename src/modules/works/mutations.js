@@ -68,6 +68,11 @@ export const workCreate = {
     works_genres: {
       name: 'works_genres',
       type: GraphQLJSON
+    },
+
+    people_works: {
+      name: 'people_works',
+      type: GraphQLJSON
     }
   },
   resolve: create
@@ -149,6 +154,11 @@ export const workUpdate = {
 
     works_genres: {
       name: 'works_genres',
+      type: GraphQLJSON
+    },
+
+    people_works: {
+      name: 'people_works',
       type: GraphQLJSON
     }
   },
