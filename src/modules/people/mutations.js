@@ -18,14 +18,6 @@ export const peopleCreate = {
       name: 'name_kanji',
       type: GraphQLString
     },
-    stub: {
-      name: 'stub',
-      type: GraphQLString
-    },
-    uniqid: {
-      name: 'uniqid',
-      type: GraphQLString
-    },
     description: {
       name: 'description',
       type: GraphQLString
@@ -57,14 +49,6 @@ export const peopleUpdate = {
     },
     name_kanji: {
       name: 'name_kanji',
-      type: GraphQLString
-    },
-    stub: {
-      name: 'stub',
-      type: GraphQLString
-    },
-    uniqid: {
-      name: 'uniqid',
       type: GraphQLString
     },
     description: {
