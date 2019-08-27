@@ -1,4 +1,5 @@
 import path from 'path';
+import sharp from 'sharp';
 
 // App Imports
 import { deleteImage, moveImage } from '../../setup/images-helpers';
@@ -18,7 +19,7 @@ export async function getByChapter(parentValue, { chapterId }) {
 // Create page
 export async function create(
   parentValue,
-  { chapterId, filename, hidden, height, width, size, mime },
+  { chapterId, filename, hidden, size, mime },
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
@@ -49,12 +50,15 @@ export async function create(
       chapterDetails.uniqid
     );
     await moveImage(oldDir, newDir, filename);
+    const imageProp = await sharp(path.join(newDir, filename))
+      .metadata()
+      .then(data => ({ width: data.width, height: data.height }));
     return await models.Page.create({
       chapterId,
       filename,
       hidden,
-      height,
-      width,
+      height: imageProp.height,
+      width: imageProp.width,
       size,
       mime
     });
