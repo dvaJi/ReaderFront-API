@@ -8,6 +8,7 @@ import setupUpload from './setup/upload';
 import setupStartServer from './setup/start-server';
 import setupDownloads from './setup/download-archive';
 import setupFeed from './setup/start-feed';
+import setupSitemap from './setup/start-sitemap';
 
 // Create express server
 const server = express();
@@ -23,6 +24,9 @@ setupDownloads(server);
 
 // Setup Feed
 setupFeed(server);
+
+// Setup Sitemap
+setupSitemap(server);
 
 // Setup GraphQL
 setupGraphQL(server);
