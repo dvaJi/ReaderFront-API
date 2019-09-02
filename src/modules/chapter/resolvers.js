@@ -114,7 +114,11 @@ export async function getWithPagesByWorkStubAndChapter(
 }
 
 // Get all chapters for RSS
-export async function getAllRSS({ language, orderBy, showHidden }) {
+export async function getAllRSS({
+  language = -1,
+  orderBy = 'DESC',
+  showHidden = false
+}) {
   return await models.Chapter.findAll({
     ...where(showHidden, language),
     order: [['releaseDate', orderBy]],

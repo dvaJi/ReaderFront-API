@@ -94,6 +94,7 @@
     "sequelize": "^5.17.2",
     "sequelize-cli": "^5.5.0",
     "sharp": "^0.23.0",
+    "sitemap": "^4.1.1",
     "uuid": "^3.3.3"
   },
   "husky": {
