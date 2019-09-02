@@ -6,7 +6,10 @@ import models from '../../setup/models';
 import { sanitizeFilename } from '../../setup/utils';
 
 // Get all peoples
-export async function getAll(parentValue, { orderBy, first, offset }) {
+export async function getAll(
+  parentValue,
+  { orderBy = 'ASC', first = 20, offset = 0 }
+) {
   return await models.People.findAll({
     order: [['id', orderBy]],
     offset: offset,
