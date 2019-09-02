@@ -10,7 +10,14 @@ import models from '../../setup/models';
 // Get posts
 export async function getAll(
   parentValue,
-  { language, orderBy, sortBy, first, offset, showHidden }
+  {
+    language = -1,
+    orderBy = 'ASC',
+    sortBy = 'id',
+    first = 10,
+    offset = 0,
+    showHidden = false
+  }
 ) {
   return await models.Post.findAll({
     ...where(showHidden, language),

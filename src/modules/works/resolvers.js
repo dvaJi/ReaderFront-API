@@ -43,11 +43,14 @@ export async function getAll(
   parentValue,
   { language, orderBy, first, offset, sortBy, showHidden },
   req,
-  { fieldNodes }
+  { fieldNodes = [] }
 ) {
-  const fields = fieldNodes[0].selectionSet.selections.map(
-    selection => selection.name.value
-  );
+  const fields =
+    fieldNodes && fieldNodes.length > 0
+      ? fieldNodes[0].selectionSet.selections.map(
+          selection => selection.name.value
+        )
+      : [];
   const includeChapters = fields.includes('chapters');
   const chapterJoin = includeChapters
     ? [
