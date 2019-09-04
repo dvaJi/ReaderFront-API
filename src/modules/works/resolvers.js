@@ -3,6 +3,7 @@ import path from 'path';
 import { Sequelize, Op } from 'sequelize';
 
 // App Imports
+import { includesField } from '../../setup/utils';
 import { deleteImage, moveImage } from '../../setup/images-helpers';
 import { createDescriptions } from '../works-description/resolvers';
 import { insertGenres } from '../works-genre/resolvers';
@@ -36,6 +37,20 @@ const whereChapter = (showHidden, language) => {
   return { where: { ...sHidden, ...oLanguage } };
 };
 
+const whereChapterWId = (showHidden, language, workId) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return { where: workId };
+  }
+
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden
+    ? {}
+    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
+
+  return { where: { ...sHidden, ...oLanguage, workId } };
+};
+
 const whereCond = showHidden => (showHidden ? {} : { hidden: false });
 
 // Get all works
@@ -45,20 +60,35 @@ export async function getAll(
   req,
   { fieldNodes = [] }
 ) {
-  const fields =
-    fieldNodes && fieldNodes.length > 0
-      ? fieldNodes[0].selectionSet.selections.map(
-          selection => selection.name.value
-        )
-      : [];
-  const includeChapters = fields.includes('chapters');
+  const includeChapters = includesField(fieldNodes, 'chapters');
   const chapterJoin = includeChapters
     ? [
         {
           model: models.Chapter,
           ...whereChapter(showHidden, language),
           as: 'chapters',
+          order: [['chapter', 'DESC'], ['subchapter', 'DESC']],
           include: [{ model: models.Page, as: 'pages' }]
+        }
+      ]
+    : [];
+
+  const includePerson = includesField(fieldNodes, 'people_works');
+  const personJoin = includePerson
+    ? [
+        {
+          model: models.PeopleWorks,
+          as: 'people_works',
+          include: [{ model: models.People }]
+        }
+      ]
+    : [];
+
+  const includeGenres = includesField(fieldNodes, 'works_genres');
+  const genresJoin = includeGenres
+    ? [
+        {
+          model: models.WorksGenres
         }
       ]
     : [];
@@ -69,48 +99,66 @@ export async function getAll(
     limit: first,
     ...where(showHidden),
     include: [
-      ...chapterJoin,
       descriptionJoin(language),
-      {
-        model: models.WorksGenres
-      },
-      {
-        model: models.PeopleWorks,
-        as: 'people_works',
-        include: [{ model: models.People }]
-      }
+      ...chapterJoin,
+      ...genresJoin,
+      ...personJoin
     ]
   });
 }
 
 // Get works by stub
-export async function getByStub(parentValue, { stub, language, showHidden }) {
-  const works = await models.Works.findOne({
+export async function getByStub(
+  parentValue,
+  { stub, language, showHidden },
+  req,
+  { fieldNodes = [] }
+) {
+  // split queries
+  // http://localhost:3000/work/goblin_slayer: actualmente toma 2.6 segundos
+  const work = await models.Works.findOne({
     where: { stub, ...whereCond(showHidden) },
     include: [
       {
-        model: models.Chapter,
-        ...whereChapter(showHidden, language),
-        as: 'chapters',
-        include: [{ model: models.Page, as: 'pages' }]
+        model: models.WorksDescription,
+        as: 'works_descriptions'
       },
-      descriptionJoin(language),
       {
         model: models.WorksGenres
-      },
-      {
-        model: models.PeopleWorks,
-        as: 'people_works',
-        include: [{ model: models.People }]
       }
     ]
   });
 
-  if (!works) {
+  if (!work) {
     // Works does not exists
     throw new Error('The works you are looking for does not exists.');
   } else {
-    return works;
+    const hasChapter = includesField(fieldNodes, 'chapters');
+    const chapters = hasChapter
+      ? await models.Chapter.findAll({
+          ...whereChapterWId(showHidden, language, work.id),
+          order: [['chapter', 'DESC'], ['subchapter', 'DESC']]
+        })
+      : [];
+
+    const hasPeople = includesField(fieldNodes, 'people_works');
+    const people_works = hasPeople
+      ? await models.PeopleWorks.findAll({
+          where: { workId: work.id },
+          include: [{ model: models.People }],
+          order: [['rol', 'ASC']]
+        })
+      : [];
+
+    const hasGenres = includesField(fieldNodes, 'works_genres');
+    const works_genres = hasGenres
+      ? await models.WorksGenres.findAll({
+          where: { workId: work.id },
+          order: [['genreId', 'ASC']]
+        })
+      : [];
+
+    return { ...work.toJSON(), chapters, people_works, works_genres };
   }
 }
 
@@ -149,19 +197,37 @@ export async function getRandom(
   parentValue,
   { language },
   req,
-  { fieldNodes }
+  { fieldNodes = [] }
 ) {
-  const fields = fieldNodes[0].selectionSet.selections.map(
-    selection => selection.name.value
-  );
-  const includeChapters = fields.includes('chapters');
+  const includeChapters = includesField(fieldNodes, 'chapters');
   const chapterJoin = includeChapters
     ? [
         {
           model: models.Chapter,
           ...whereChapter(false, language),
           as: 'chapters',
+          order: [['chapter', 'DESC'], ['subchapter', 'DESC']],
           include: [{ model: models.Page, as: 'pages' }]
+        }
+      ]
+    : [];
+
+  const includePerson = includesField(fieldNodes, 'people_works');
+  const personJoin = includePerson
+    ? [
+        {
+          model: models.PeopleWorks,
+          as: 'people_works',
+          include: [{ model: models.People }]
+        }
+      ]
+    : [];
+
+  const includeGenres = includesField(fieldNodes, 'works_genres');
+  const genresJoin = includeGenres
+    ? [
+        {
+          model: models.WorksGenres
         }
       ]
     : [];
@@ -173,14 +239,8 @@ export async function getRandom(
     include: [
       descriptionJoin(language),
       ...chapterJoin,
-      {
-        model: models.WorksGenres
-      },
-      {
-        model: models.PeopleWorks,
-        as: 'people_works',
-        include: [{ model: models.People }]
-      }
+      ...personJoin,
+      ...genresJoin
     ]
   });
 }

@@ -72,3 +72,18 @@ export async function forEachSeries(array, callback, thisArg) {
 export function getFileExtension(filename) {
   return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined;
 }
+
+/**
+ * Check if the field is included in the gql query
+ * @param {*} fieldNodes
+ * @param {*} field
+ */
+export function includesField(fieldNodes = [], field) {
+  const fields =
+    fieldNodes && fieldNodes.length > 0
+      ? fieldNodes[0].selectionSet.selections.map(
+          selection => selection.name.value
+        )
+      : [];
+  return fields.includes(field);
+}
