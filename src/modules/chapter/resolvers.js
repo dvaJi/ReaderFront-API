@@ -2,13 +2,20 @@ import uuidv1 from 'uuid/v1';
 import { Op } from 'sequelize';
 
 // App Imports
+import { includesField } from '../../setup/utils';
 import params from '../../config/params';
 import models from '../../setup/models';
 
 // Get all chapters
 export async function getAll(
   parentValue,
-  { language, orderBy, first, offset, showHidden }
+  {
+    language = -1,
+    orderBy = 'DESC',
+    first = 10,
+    offset = 0,
+    showHidden = false
+  }
 ) {
   return await models.Chapter.findAll({
     ...where(showHidden, language),
@@ -17,12 +24,12 @@ export async function getAll(
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
     ],
-    offset: offset ? offset : 0,
-    limit: first ? first : 10
+    offset: offset,
+    limit: first
   });
 }
 
-export async function getLast(parentValue, { offset }) {
+export async function getLast(parentValue, { offset = 0 }) {
   return await models.Chapter.findOne({
     order: [['updatedAt', 'DESC']],
     offset: offset,
@@ -47,13 +54,10 @@ export async function getByWork(
   parentValue,
   { workStub, language, showHidden },
   req,
-  { fieldNodes }
+  { fieldNodes = [] }
 ) {
   const order = [['chapter', 'ASC'], ['subchapter', 'ASC']];
-  const fields = fieldNodes[0].selectionSet.selections.map(
-    selection => selection.name.value
-  );
-  const includePages = fields.includes('pages');
+  const includePages = includesField(fieldNodes, 'pages');
   const pages = includePages
     ? {
         join: [
