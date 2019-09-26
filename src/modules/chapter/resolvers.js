@@ -56,7 +56,7 @@ export async function getByWork(
   req,
   { fieldNodes = [] }
 ) {
-  const order = [['chapter', 'ASC'], ['subchapter', 'ASC']];
+  const order = [['chapter', 'DESC'], ['subchapter', 'DESC']];
   const includePages = includesField(fieldNodes, 'pages');
   const pages = includePages
     ? {
@@ -78,7 +78,7 @@ export async function getByWork(
       { model: models.Works, as: 'work', where: { stub: workStub } },
       ...pages.join
     ],
-    ...pages.order
+    order
   });
 }
 
