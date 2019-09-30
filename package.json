@@ -93,7 +93,7 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "sequelize": "^5.19.1",
     "sequelize-cli": "^5.5.1",
-    "sharp": "^0.23.0",
+    "sharp": "^0.23.1",
     "sitemap": "^4.1.1",
     "uuid": "^3.3.3"
   },
