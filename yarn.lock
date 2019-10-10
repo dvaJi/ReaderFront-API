@@ -6998,10 +6998,10 @@ sequelize@^3.24.1:
     validator "^5.2.0"
     wkx "0.2.0"
 
-sequelize@^5.19.3:
-  version "5.19.3"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.19.3.tgz#461f05d5b68888298e6162ffd63695f89eebe9cd"
-  integrity sha512-QQC/l2wdlCJMKI4XexX6n86k+fEvntOlWdGe+CzS1d0VW9AbVcSS3PIfpiuOAaQw+nEQBi1DhMlEgn5N8r0omQ==
+sequelize@^5.19.5:
+  version "5.19.5"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.19.5.tgz#87a53437460ee2e527ad9478458e26a87889a2a0"
+  integrity sha512-NdICIFJ0KEjLGrlbnVC3K74tPursZ9yjY5112uCiAxiXK2LXyXP1ePgATEdMJDdeaR5hmP4//qFInTfrnoGe/w==
   dependencies:
     bluebird "^3.5.0"
     cls-bluebird "^2.1.0"
