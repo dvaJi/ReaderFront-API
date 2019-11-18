@@ -1,6 +1,10 @@
 import path from 'path';
 import { ensureDir, ensureFile, move, remove } from 'fs-extra';
 
+export function isValidThumb(thumb) {
+  return thumb !== null && thumb !== '';
+}
+
 /**
  * Delete a image
  *
