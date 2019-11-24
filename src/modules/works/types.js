@@ -24,7 +24,9 @@ const WorkType = new GraphQLObjectType({
     chapters: { type: new GraphQLList(ChapterType) },
     works_descriptions: { type: new GraphQLList(WorksDescriptionType) },
     works_genres: { type: new GraphQLList(WorksGenreType) },
+    genres: { type: new GraphQLList(WorksGenre) },
     people_works: { type: new GraphQLList(PeopleWorksType) },
+    languages: { type: new GraphQLList(WorksLanguageType) },
     name: { type: GraphQLString },
     stub: { type: GraphQLString },
     uniqid: { type: GraphQLString },
@@ -36,6 +38,7 @@ const WorkType = new GraphQLObjectType({
     adult: { type: GraphQLBoolean },
     visits: { type: GraphQLInt },
     thumbnail: { type: GraphQLString },
+    thumbnail_path: { type: GraphQLString },
     createdAt: { type: GraphQLDate },
     updatedAt: { type: GraphQLDate }
   })
@@ -62,6 +65,27 @@ const WorkAggregatesType = new GraphQLObjectType({
     sum: { type: GraphQLInt },
     max: { type: GraphQLInt },
     min: { type: GraphQLInt }
+  })
+});
+
+const WorksGenre = new GraphQLObjectType({
+  name: 'worksGenrasde',
+  description: 'Works Genre',
+
+  fields: () => ({
+    id: { type: GraphQLInt },
+    name: { type: GraphQLString }
+  })
+});
+
+const WorksLanguageType = new GraphQLObjectType({
+  name: 'worksLanguageType',
+  description: 'Works Language Type',
+
+  fields: () => ({
+    id: { type: GraphQLInt },
+    name: { type: GraphQLString },
+    description: { type: GraphQLString }
   })
 });
 

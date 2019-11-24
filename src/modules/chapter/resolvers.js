@@ -2,7 +2,9 @@ import uuidv1 from 'uuid/v1';
 import { Op } from 'sequelize';
 
 // App Imports
-import { includesField } from '../../setup/utils';
+import { includesField, languageIdToName } from '../../setup/utils';
+import { isValidThumb } from '../../setup/images-helpers';
+import { API_URL } from '../../config/env';
 import params from '../../config/params';
 import models from '../../setup/models';
 
@@ -17,7 +19,7 @@ export async function getAll(
     showHidden = false
   }
 ) {
-  return await models.Chapter.findAll({
+  const chapters = await models.Chapter.findAll({
     ...where(showHidden, language),
     order: [['releaseDate', orderBy], [models.Page, 'filename']],
     include: [
@@ -26,27 +28,9 @@ export async function getAll(
     ],
     offset: offset,
     limit: first
-  });
-}
+  }).map(el => el.get({ plain: true }));
 
-export async function getLast(parentValue, { offset = 0 }) {
-  return await models.Chapter.findOne({
-    order: [['updatedAt', 'DESC']],
-    offset: offset,
-    limit: 1
-  });
-}
-
-export async function getAllByDate(parentValue, { startDate, endDate }) {
-  const where = {
-    updatedAt: {
-      $between: [startDate, endDate]
-    }
-  };
-  return await models.Chapter.findAll({
-    where,
-    include: [{ model: models.Page, as: 'pages' }]
-  });
+  return chapters.map(chapter => normalizeChapter(chapter, chapter.work));
 }
 
 // Get chapter by work
@@ -57,7 +41,7 @@ export async function getByWork(
   { fieldNodes = [] }
 ) {
   const order = [['chapter', 'DESC'], ['subchapter', 'DESC']];
-  const includePages = includesField(fieldNodes, 'pages');
+  const includePages = includesField(fieldNodes, ['pages']);
   const pages = includePages
     ? {
         join: [
@@ -72,14 +56,16 @@ export async function getByWork(
         join: [],
         order: { order: order }
       };
-  return await models.Chapter.findAll({
+  const chapters = await models.Chapter.findAll({
     ...where(showHidden, language),
     include: [
       { model: models.Works, as: 'work', where: { stub: workStub } },
       ...pages.join
     ],
     order
-  });
+  }).map(el => el.get({ plain: true }));
+
+  return chapters.map(chapter => normalizeChapter(chapter, chapter.work));
 }
 
 // Get chapter by id
@@ -87,7 +73,7 @@ export async function getById(parentValue, { id, showHidden }) {
   const where = showHidden
     ? { where: { id } }
     : { where: { hidden: false, id } };
-  return await models.Chapter.findOne({
+  const chapter = await models.Chapter.findOne({
     ...where,
     include: [
       { model: models.Works, as: 'work' },
@@ -95,6 +81,8 @@ export async function getById(parentValue, { id, showHidden }) {
     ],
     order: [[models.Page, 'filename']]
   });
+
+  return normalizeChapter(chapter.toJSON(), chapter.toJSON().work);
 }
 
 // Get chapter by work stub, chapter + subchapter + volume + language
@@ -107,7 +95,7 @@ export async function getWithPagesByWorkStubAndChapter(
     where.where.hidden = false;
     where.where.releaseDate = { [Op.lt]: new Date() };
   }
-  return await models.Chapter.findOne({
+  const chapterObj = await models.Chapter.findOne({
     ...where,
     include: [
       { model: models.Works, as: 'work', where: { stub: workStub } },
@@ -115,6 +103,8 @@ export async function getWithPagesByWorkStubAndChapter(
     ],
     order: [[models.Page, 'filename']]
   });
+
+  return normalizeChapter(chapterObj.toJSON(), chapterObj.toJSON().work);
 }
 
 // Get all chapters for RSS
@@ -123,13 +113,15 @@ export async function getAllRSS({
   orderBy = 'DESC',
   showHidden = false
 }) {
-  return await models.Chapter.findAll({
+  const chapters = await models.Chapter.findAll({
     ...where(showHidden, language),
     order: [['releaseDate', orderBy]],
     include: [{ model: models.Works, as: 'work' }],
     offset: 0,
     limit: 25
-  });
+  }).map(el => el.get({ plain: true }));
+
+  return chapters.map(chapter => normalizeChapter(chapter, chapter.work));
 }
 
 // Create chapter
@@ -270,3 +262,15 @@ const where = (showHidden, language) => {
 
   return { where: { ...sHidden, ...oLanguage } };
 };
+
+export const normalizeChapter = (chapter, work) => ({
+  ...chapter,
+  download_href: `${API_URL}download/${chapter.id}`,
+  thumbnail_path: isValidThumb(chapter.thumbnail)
+    ? `works/${work.uniqid}/${chapter.uniqid}/${chapter.thumbnail}`
+    : 'images/default-cover.png',
+  language_name: languageIdToName(chapter.language),
+  read_path: `read/${work.stub}/${languageIdToName(chapter.language)}/${
+    chapter.volume
+  }/${chapter.chapter}.${chapter.subchapter}`
+});

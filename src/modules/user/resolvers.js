@@ -64,6 +64,9 @@ export async function activate(
   { email, activatedToken },
   { clientIp }
 ) {
+  if (!email || !activatedToken) {
+    throw new Error(`Invalid parameters.`);
+  }
   // Users exists with same email check
   const user = await models.User.findOne({ where: { email } });
 
@@ -110,9 +113,7 @@ export async function login(parentValue, { email, password }, { clientIp }) {
 
   if (!user) {
     // User does not exists
-    throw new Error(
-      `We do not have any user registered with ${email} email address. Please signup.`
-    );
+    throw new Error(`Incorrect credentials`);
   } else {
     const userDetails = user.get();
 
@@ -142,9 +143,7 @@ export async function login(parentValue, { email, password }, { clientIp }) {
 
     if (!passwordMatch) {
       // Incorrect password
-      throw new Error(
-        `Sorry, the password you entered is incorrect. Please try again.`
-      );
+      throw new Error(`Incorrect credentials`);
     } else {
       // Update Users info
       await models.User.update(
