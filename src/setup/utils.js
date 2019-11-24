@@ -1,5 +1,7 @@
 import path from 'path';
 
+import params from '../config/params';
+
 /**
  * Generate a path of a chapter, if filename is undefined it will return only the directory
  * @param {*} chapter
@@ -67,7 +69,7 @@ export async function forEachSeries(array, callback, thisArg) {
 
 /**
  * Get extension from a file
- * @param {*} filename
+ * @param {string} filename
  */
 export function getFileExtension(filename) {
   return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined;
@@ -76,14 +78,64 @@ export function getFileExtension(filename) {
 /**
  * Check if the field is included in the gql query
  * @param {*} fieldNodes
- * @param {*} field
+ * @param {string[]} fields
  */
-export function includesField(fieldNodes = [], field) {
-  const fields =
+export function includesField(fieldNodes = [], fields) {
+  const resultFields =
     fieldNodes && fieldNodes.length > 0
       ? fieldNodes[0].selectionSet.selections.map(
           selection => selection.name.value
         )
       : [];
-  return fields.includes(field);
+
+  let isIncluded = false;
+
+  for (let index = 0; index < fields.length; index++) {
+    const field = fields[index];
+    if (resultFields.includes(field)) {
+      isIncluded = true;
+    }
+  }
+
+  return isIncluded;
+}
+
+// Language helpers
+export const languages = Object.keys(params.global.languages).map(
+  k => params.global.languages[k]
+);
+
+export function languageIdToName(langId) {
+  const language = languages.find(lang => lang.id === langId);
+  return language !== undefined ? language.name : null;
+}
+
+// Genres Status helpers
+export const genresTypes = Object.keys(params.genres.types).map(
+  g => params.genres.types[g]
+);
+
+export function genreTypeIdToName(genreId) {
+  const genre = genresTypes.find(genre => genre.id === genreId);
+  return genre !== undefined ? genre.name : null;
+}
+
+// Posts Status helpers
+export const postsStatus = Object.keys(params.blog.status).map(
+  k => params.blog.status[k]
+);
+
+export function postsStatusIdToName(statusId) {
+  const status = postsStatus.find(status => status.id === statusId);
+  return status !== undefined ? status.name : null;
+}
+
+// Blog Categories helpers
+export const blogCategories = Object.keys(params.blog.categories).map(
+  k => params.blog.categories[k]
+);
+
+export function blogCategoriesIdToName(categoryId) {
+  const category = blogCategories.find(cat => cat.id === categoryId);
+  return category !== undefined ? category.name : null;
 }
