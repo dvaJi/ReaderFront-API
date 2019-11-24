@@ -1,10 +1,20 @@
 import uuidv1 from 'uuid/v1';
 import path from 'path';
 import { Sequelize, Op } from 'sequelize';
+import ld from 'lodash';
 
 // App Imports
-import { includesField } from '../../setup/utils';
-import { deleteImage, moveImage } from '../../setup/images-helpers';
+import {
+  includesField,
+  languageIdToName,
+  genreTypeIdToName
+} from '../../setup/utils';
+import {
+  isValidThumb,
+  deleteImage,
+  moveImage
+} from '../../setup/images-helpers';
+import { normalizeChapter } from '../chapter/resolvers';
 import { createDescriptions } from '../works-description/resolvers';
 import { insertGenres } from '../works-genre/resolvers';
 import { insertStaff } from '../people-works/resolvers';
@@ -60,7 +70,7 @@ export async function getAll(
   req,
   { fieldNodes = [] }
 ) {
-  const includeChapters = includesField(fieldNodes, 'chapters');
+  const includeChapters = includesField(fieldNodes, ['chapters']);
   const chapterJoin = includeChapters
     ? [
         {
@@ -73,7 +83,7 @@ export async function getAll(
       ]
     : [];
 
-  const includePerson = includesField(fieldNodes, 'people_works');
+  const includePerson = includesField(fieldNodes, ['people_works']);
   const personJoin = includePerson
     ? [
         {
@@ -84,7 +94,7 @@ export async function getAll(
       ]
     : [];
 
-  const includeGenres = includesField(fieldNodes, 'works_genres');
+  const includeGenres = includesField(fieldNodes, ['works_genres', 'genres']);
   const genresJoin = includeGenres
     ? [
         {
@@ -93,7 +103,7 @@ export async function getAll(
       ]
     : [];
 
-  return await models.Works.findAll({
+  const works = await models.Works.findAll({
     order: [[sortBy, orderBy]],
     offset: offset,
     limit: first,
@@ -104,7 +114,11 @@ export async function getAll(
       ...genresJoin,
       ...personJoin
     ]
-  });
+  })
+    .map(el => el.get({ plain: true }))
+    .then(works => works.map(work => normalizeWork(work)));
+
+  return works;
 }
 
 // Get works by stub
@@ -133,16 +147,16 @@ export async function getByStub(
     // Works does not exists
     throw new Error('The works you are looking for does not exists.');
   } else {
-    const hasChapter = includesField(fieldNodes, 'chapters');
-    const chapters = hasChapter
+    const includeChapters = includesField(fieldNodes, ['chapters']);
+    const chapters = includeChapters
       ? await models.Chapter.findAll({
           ...whereChapterWId(showHidden, language, work.id),
           order: [['chapter', 'DESC'], ['subchapter', 'DESC']]
-        })
+        }).map(el => el.get({ plain: true }))
       : [];
 
-    const hasPeople = includesField(fieldNodes, 'people_works');
-    const people_works = hasPeople
+    const includePeople = includesField(fieldNodes, ['people_works']);
+    const people_works = includePeople
       ? await models.PeopleWorks.findAll({
           where: { workId: work.id },
           include: [{ model: models.People }],
@@ -150,15 +164,20 @@ export async function getByStub(
         })
       : [];
 
-    const hasGenres = includesField(fieldNodes, 'works_genres');
-    const works_genres = hasGenres
+    const includeGenres = includesField(fieldNodes, ['works_genres', 'genres']);
+    const works_genres = includeGenres
       ? await models.WorksGenres.findAll({
           where: { workId: work.id },
           order: [['genreId', 'ASC']]
-        })
+        }).map(el => el.get({ plain: true }))
       : [];
 
-    return { ...work.toJSON(), chapters, people_works, works_genres };
+    return normalizeWork({
+      ...work.toJSON(),
+      chapters,
+      people_works,
+      works_genres
+    });
   }
 }
 
@@ -199,7 +218,7 @@ export async function getRandom(
   req,
   { fieldNodes = [] }
 ) {
-  const includeChapters = includesField(fieldNodes, 'chapters');
+  const includeChapters = includesField(fieldNodes, ['chapters']);
   const chapterJoin = includeChapters
     ? [
         {
@@ -212,7 +231,7 @@ export async function getRandom(
       ]
     : [];
 
-  const includePerson = includesField(fieldNodes, 'people_works');
+  const includePerson = includesField(fieldNodes, ['people_works']);
   const personJoin = includePerson
     ? [
         {
@@ -223,7 +242,7 @@ export async function getRandom(
       ]
     : [];
 
-  const includeGenres = includesField(fieldNodes, 'works_genres');
+  const includeGenres = includesField(fieldNodes, ['works_genres', 'genres']);
   const genresJoin = includeGenres
     ? [
         {
@@ -232,7 +251,7 @@ export async function getRandom(
       ]
     : [];
 
-  return await models.Works.findOne({
+  const work = await models.Works.findOne({
     limit: 1,
     order: [[models.Sequelize.fn('RAND')]],
     where: { hidden: false },
@@ -243,6 +262,8 @@ export async function getRandom(
       ...genresJoin
     ]
   });
+
+  return normalizeWork(work.get({ plain: true }));
 }
 
 // Create works with cover
@@ -457,3 +478,22 @@ const descriptionJoin = lang =>
         model: models.WorksDescription,
         as: 'works_descriptions'
       };
+
+const normalizeWork = work => ({
+  ...work,
+  thumbnail_path: isValidThumb(work.thumbnail)
+    ? `works/${work.uniqid}/${work.thumbnail}`
+    : 'images/default-cover.png',
+  languages: ld.get(work, 'works_descriptions', []).map(wd => ({
+    id: wd.language,
+    name: languageIdToName(wd.language),
+    description: wd.description
+  })),
+  genres: ld.get(work, 'works_genres', []).map(genre => ({
+    id: genre.genreId,
+    name: genreTypeIdToName(genre.genreId)
+  })),
+  chapters: ld
+    .get(work, 'chapters', [])
+    .map(chapter => normalizeChapter(chapter, work))
+});

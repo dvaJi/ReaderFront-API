@@ -12,6 +12,7 @@ export default function(request, response, next) {
       request.user = jwt.verify(token[1], SECRET_KEY);
     } catch (e) {
       console.warn('Invalid token detected.');
+      request.user = {};
     }
   } else {
     request.user = {};
