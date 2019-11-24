@@ -25,13 +25,17 @@ const ChapterType = new GraphQLObjectType({
     subchapter: { type: GraphQLInt },
     volume: { type: GraphQLInt },
     language: { type: GraphQLInt },
+    language_name: { type: GraphQLString },
     name: { type: GraphQLString },
     stub: { type: GraphQLString },
     uniqid: { type: GraphQLString },
     hidden: { type: GraphQLBoolean },
     description: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
+    thumbnail_path: { type: GraphQLString },
     releaseDate: { type: GraphQLDate },
+    download_href: { type: GraphQLString },
+    read_path: { type: GraphQLString },
     createdAt: { type: GraphQLDate },
     updatedAt: { type: GraphQLDate }
   })

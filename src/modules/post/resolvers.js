@@ -3,9 +3,37 @@ import path from 'path';
 import uuidv1 from 'uuid/v1';
 
 // App Imports
-import { deleteImage, moveImage } from '../../setup/images-helpers';
+import {
+  deleteImage,
+  moveImage,
+  isValidThumb
+} from '../../setup/images-helpers';
+import {
+  languageIdToName,
+  postsStatusIdToName,
+  blogCategoriesIdToName
+} from '../../setup/utils';
 import params from '../../config/params';
 import models from '../../setup/models';
+
+const TEMP_DIR = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'public',
+  'images',
+  'uploads'
+);
+const BLOG_DIR = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'public',
+  'images',
+  'blog'
+);
 
 // Get posts
 export async function getAll(
@@ -19,13 +47,15 @@ export async function getAll(
     showHidden = false
   }
 ) {
-  return await models.Post.findAll({
+  const posts = await models.Post.findAll({
     ...where(showHidden, language),
     order: [[sortBy, orderBy]],
     include: [{ model: models.User, as: 'user' }],
     offset: offset,
     limit: first
-  });
+  }).map(el => el.get({ plain: true }));
+
+  return posts.map(post => normalizePost(post));
 }
 
 // Get post by stub
@@ -33,10 +63,12 @@ export async function getByStub(parentValue, { stub, showHidden }) {
   const where = showHidden
     ? { where: { stub } }
     : { where: { hidden: false, stub } };
-  return await models.Post.findOne({
+  const post = await models.Post.findOne({
     ...where,
     include: [{ model: models.User, as: 'user' }]
   });
+
+  return normalizePost(post.toJSON());
 }
 
 // Get posts by category
@@ -74,27 +106,9 @@ export async function create(
   if (auth.user && auth.user.role === params.user.roles.admin) {
     uniqid = uuidv1();
     if (thumbnail) {
-      const tempDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'images',
-        'uploads'
-      );
-      const newDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'images',
-        'blog',
-        uniqid
-      );
+      const newDir = path.join(BLOG_DIR, uniqid);
 
-      await moveImage(tempDir, newDir, thumbnail);
+      await moveImage(TEMP_DIR, newDir, thumbnail);
     }
     return await models.Post.create({
       userId,
@@ -141,27 +155,9 @@ export async function update(
     });
     const postDetail = await post.get();
     if (thumbnail !== postDetail.thumbnail) {
-      const tempDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'images',
-        'uploads'
-      );
-      const newDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'public',
-        'images',
-        'blog',
-        uniqid
-      );
+      const newDir = path.join(BLOG_DIR, uniqid);
 
-      await moveImage(tempDir, newDir, thumbnail);
+      await moveImage(TEMP_DIR, newDir, thumbnail);
     }
     return await models.Post.update(
       {
@@ -196,13 +192,7 @@ export async function remove(parentValue, { id }, { auth }) {
       const postDetail = await post.get();
       if (postDetail.thumbnail) {
         const directory = path.join(
-          __dirname,
-          '..',
-          '..',
-          '..',
-          'public',
-          'images',
-          'blog',
+          BLOG_DIR,
           postDetail.uniqid,
           postDetail.thumbnail
         );
@@ -261,3 +251,13 @@ const whereCat = (showHidden, language, category) => {
 
   return { where: { ...sHidden, ...oLanguage, ...category } };
 };
+
+export const normalizePost = post => ({
+  ...post,
+  thumbnail_path: isValidThumb(post.thumbnail)
+    ? `images/blog/${post.uniqid}/${post.thumbnail}`
+    : 'images/default-cover.png',
+  language_name: languageIdToName(post.language),
+  category_name: blogCategoriesIdToName(post.category),
+  status_name: postsStatusIdToName(post.status)
+});

@@ -24,10 +24,14 @@ const PostType = new GraphQLObjectType({
     stub: { type: GraphQLString },
     content: { type: GraphQLString },
     category: { type: GraphQLInt },
+    category_name: { type: GraphQLString },
     status: { type: GraphQLInt },
+    status_name: { type: GraphQLString },
     sticky: { type: GraphQLBoolean },
     language: { type: GraphQLInt },
+    language_name: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
+    thumbnail_path: { type: GraphQLString },
     createdAt: { type: GraphQLDate },
     updatedAt: { type: GraphQLDate }
   })
