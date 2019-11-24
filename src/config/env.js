@@ -19,7 +19,11 @@ export const GRAPHQL_IDE =
 
 // URL
 export const APP_URL = process.env.APP_URL;
-export const API_URL = process.env.API_URL;
+let API = process.env.API_URL;
+if (!API.endsWith('/')) {
+  API = process.env.API_URL + '/';
+}
+export const API_URL = API;
 export const REACT_APP_APP_TITLE = process.env.REACT_APP_APP_TITLE;
 
 // Email
