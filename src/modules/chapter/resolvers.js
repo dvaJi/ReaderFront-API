@@ -21,7 +21,10 @@ export async function getAll(
 ) {
   const chapters = await models.Chapter.findAll({
     ...where(showHidden, language),
-    order: [['releaseDate', orderBy], [models.Page, 'filename']],
+    order: [
+      ['releaseDate', orderBy],
+      [models.Page, 'filename']
+    ],
     include: [
       { model: models.Works, as: 'work' },
       { model: models.Page, as: 'pages' }
@@ -40,7 +43,10 @@ export async function getByWork(
   req,
   { fieldNodes = [] }
 ) {
-  const order = [['chapter', 'DESC'], ['subchapter', 'DESC']];
+  const order = [
+    ['chapter', 'DESC'],
+    ['subchapter', 'DESC']
+  ];
   const includePages = includesField(fieldNodes, ['pages']);
   const pages = includePages
     ? {

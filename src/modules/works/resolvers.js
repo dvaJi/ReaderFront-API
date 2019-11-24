@@ -77,7 +77,10 @@ export async function getAll(
           model: models.Chapter,
           ...whereChapter(showHidden, language),
           as: 'chapters',
-          order: [['chapter', 'DESC'], ['subchapter', 'DESC']],
+          order: [
+            ['chapter', 'DESC'],
+            ['subchapter', 'DESC']
+          ],
           include: [{ model: models.Page, as: 'pages' }]
         }
       ]
@@ -151,7 +154,10 @@ export async function getByStub(
     const chapters = includeChapters
       ? await models.Chapter.findAll({
           ...whereChapterWId(showHidden, language, work.id),
-          order: [['chapter', 'DESC'], ['subchapter', 'DESC']]
+          order: [
+            ['chapter', 'DESC'],
+            ['subchapter', 'DESC']
+          ]
         }).map(el => el.get({ plain: true }))
       : [];
 
@@ -225,7 +231,10 @@ export async function getRandom(
           model: models.Chapter,
           ...whereChapter(false, language),
           as: 'chapters',
-          order: [['chapter', 'DESC'], ['subchapter', 'DESC']],
+          order: [
+            ['chapter', 'DESC'],
+            ['subchapter', 'DESC']
+          ],
           include: [{ model: models.Page, as: 'pages' }]
         }
       ]
