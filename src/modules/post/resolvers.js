@@ -5,7 +5,7 @@ import uuidv1 from 'uuid/v1';
 // App Imports
 import {
   deleteImage,
-  moveImage,
+  storeImage,
   isValidThumb
 } from '../../setup/images-helpers';
 import {
@@ -16,15 +16,6 @@ import {
 import params from '../../config/params';
 import models from '../../setup/models';
 
-const TEMP_DIR = path.join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  'public',
-  'images',
-  'uploads'
-);
 const BLOG_DIR = path.join(
   __dirname,
   '..',
@@ -105,11 +96,14 @@ export async function create(
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
     uniqid = uuidv1();
-    if (thumbnail) {
-      const newDir = path.join(BLOG_DIR, uniqid);
 
-      await moveImage(TEMP_DIR, newDir, thumbnail);
+    let thumbnailFilename = null;
+    if (thumbnail) {
+      const coverPath = path.join(BLOG_DIR, uniqid);
+      const { filename } = await storeImage(thumbnail, coverPath);
+      thumbnailFilename = filename;
     }
+
     return await models.Post.create({
       userId,
       uniqid,
@@ -121,7 +115,7 @@ export async function create(
       content,
       category,
       language,
-      thumbnail
+      thumbnail: thumbnailFilename
     });
   } else {
     throw new Error('Operation denied.');
@@ -134,7 +128,6 @@ export async function update(
   {
     id,
     userId,
-    uniqid,
     type,
     title,
     stub,
@@ -148,33 +141,39 @@ export async function update(
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
-    const post = await models.Post.findOne({
-      where: {
-        id: id
-      }
-    });
-    const postDetail = await post.get();
-    if (thumbnail !== postDetail.thumbnail) {
-      const newDir = path.join(BLOG_DIR, uniqid);
+    let newPost = {
+      userId,
+      type,
+      title,
+      stub,
+      status,
+      sticky,
+      content,
+      category,
+      language
+    };
 
-      await moveImage(TEMP_DIR, newDir, thumbnail);
+    if (thumbnail) {
+      const post = await models.Post.findOne({ where: { id } });
+      const postDetail = await post.get();
+
+      // Store new cover
+      const coverPath = path.join(BLOG_DIR, postDetail.uniqid);
+      const { filename } = await storeImage(thumbnail, coverPath);
+      newPost.thumbnail = filename;
+
+      // Delete old cover
+      const oldCoverPath = path.join(
+        BLOG_DIR,
+        postDetail.uniqid,
+        postDetail.thumbnail
+      );
+      await deleteImage(oldCoverPath);
     }
-    return await models.Post.update(
-      {
-        userId,
-        uniqid,
-        type,
-        title,
-        stub,
-        status,
-        sticky,
-        content,
-        category,
-        language,
-        thumbnail
-      },
-      { where: { id } }
-    );
+
+    await models.Post.update(newPost, { where: { id } });
+
+    return { id };
   } else {
     throw new Error('Operation denied.');
   }
@@ -232,7 +231,7 @@ export async function getAggregates(
 }
 
 const where = (showHidden, language) => {
-  if (showHidden && language === -1) {
+  if (showHidden && (language === -1 || !language)) {
     return {};
   }
 

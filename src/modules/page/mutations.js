@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
+import { GraphQLUpload } from 'graphql-upload';
 
 // App Imports
 import { PageType } from './types';
@@ -14,34 +15,14 @@ export const pageCreate = {
       type: GraphQLInt
     },
 
-    filename: {
-      name: 'filename',
-      type: GraphQLString
-    },
-
-    hidden: {
-      name: 'hidden',
-      type: GraphQLBoolean
-    },
-
-    height: {
-      name: 'height',
-      type: GraphQLInt
-    },
-
-    width: {
-      name: 'width',
-      type: GraphQLInt
+    file: {
+      name: 'file',
+      type: GraphQLUpload
     },
 
     size: {
       name: 'size',
       type: GraphQLInt
-    },
-
-    mime: {
-      name: 'mime',
-      type: GraphQLString
     }
   },
   resolve: create

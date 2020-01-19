@@ -12,7 +12,7 @@ import {
 import {
   isValidThumb,
   deleteImage,
-  moveImage
+  storeImage
 } from '../../setup/images-helpers';
 import { normalizeChapter } from '../chapter/resolvers';
 import { createDescriptions } from '../works-description/resolvers';
@@ -21,47 +21,7 @@ import { insertStaff } from '../people-works/resolvers';
 import params from '../../config/params';
 import models from '../../setup/models';
 
-const where = (showHidden, language) => {
-  const isAllLanguage = language === -1 || language === undefined;
-  if (showHidden && isAllLanguage) {
-    return {};
-  }
-
-  const oLanguage = isAllLanguage ? {} : { language };
-  const sHidden = showHidden ? {} : { hidden: false };
-
-  return { where: { ...sHidden, ...oLanguage } };
-};
-
-const whereChapter = (showHidden, language) => {
-  const isAllLanguage = language === -1 || language === undefined;
-  if (showHidden && isAllLanguage) {
-    return {};
-  }
-
-  const oLanguage = isAllLanguage ? {} : { language };
-  const sHidden = showHidden
-    ? {}
-    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
-
-  return { where: { ...sHidden, ...oLanguage } };
-};
-
-const whereChapterWId = (showHidden, language, workId) => {
-  const isAllLanguage = language === -1 || language === undefined;
-  if (showHidden && isAllLanguage) {
-    return { where: workId };
-  }
-
-  const oLanguage = isAllLanguage ? {} : { language };
-  const sHidden = showHidden
-    ? {}
-    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
-
-  return { where: { ...sHidden, ...oLanguage, workId } };
-};
-
-const whereCond = showHidden => (showHidden ? {} : { hidden: false });
+const WORKS_PATH = path.join(__dirname, '..', '..', '..', 'public', 'works');
 
 // Get all works
 export async function getAll(
@@ -299,6 +259,13 @@ export async function create(
   if (auth.user && auth.user.role === params.user.roles.admin) {
     const uniqid = uuidv1();
 
+    let thumbnailFilename = null;
+    if (thumbnail) {
+      const coverPath = path.join(WORKS_PATH, uniqid);
+      const { filename } = await storeImage(thumbnail, coverPath);
+      thumbnailFilename = filename;
+    }
+
     return await models.Works.create({
       name,
       stub,
@@ -310,11 +277,10 @@ export async function create(
       statusReason,
       description,
       adult,
-      thumbnail,
+      thumbnail: thumbnailFilename,
       visits
     }).then(async work => {
       const workdetails = await work.get();
-      await createWorkCover(workdetails, thumbnail);
 
       // Add descriptions
       workdetails.works_descriptions = await createDescriptions(
@@ -362,39 +328,50 @@ export async function update(
   { auth }
 ) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
-    const oldWork = await models.Works.findOne({ where: { id } });
-    return await models.Works.update(
-      {
-        name,
-        stub,
-        uniqid,
-        type,
-        hidden,
-        demographicId,
-        status,
-        statusReason,
-        description,
-        adult,
-        thumbnail,
-        visits
-      },
-      { where: { id } }
-    ).then(async () => {
+    let newWork = {
+      name,
+      stub,
+      uniqid,
+      type,
+      hidden,
+      demographicId,
+      status,
+      statusReason,
+      description,
+      adult,
+      thumbnail,
+      visits
+    };
+
+    if (thumbnail) {
+      const oldWork = await models.Works.findOne({ where: { id } });
       const oldWorkDetail = oldWork.get();
-      const isNewCover = thumbnail !== oldWorkDetail.thumbnail;
-      if (isNewCover) {
-        const newWork = await models.Works.findOne({ where: { id } });
-        await createWorkCover(newWork, thumbnail);
+
+      // Store new cover
+      const coverPath = path.join(WORKS_PATH, oldWorkDetail.uniqid);
+      const { filename } = await storeImage(thumbnail, coverPath);
+      newWork.thumbnail = filename;
+
+      // Delete old cover
+      const oldCoverPath = path.join(
+        WORKS_PATH,
+        oldWorkDetail.uniqid,
+        oldWorkDetail.thumbnail
+      );
+      await deleteImage(oldCoverPath);
+    }
+
+    return await models.Works.update(newWork, { where: { id } }).then(
+      async () => {
+        await createDescriptions(works_descriptions, id);
+
+        // Add genres
+        await insertGenres(id, works_genres);
+
+        // Add Staff
+        await insertStaff(id, people_works);
       }
-
-      await createDescriptions(works_descriptions, id);
-
-      // Add genres
-      await insertGenres(id, works_genres);
-
-      // Add Staff
-      await insertStaff(id, people_works);
-    });
+    );
   } else {
     throw new Error('Operation denied.');
   }
@@ -448,33 +425,47 @@ export async function getAggregates(
   return result;
 }
 
-export async function createWorkCover(work, filename) {
-  const tempDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    'public',
-    'images',
-    'uploads'
-  );
-  const newDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    'public',
-    'works',
-    work.uniqid
-  );
+const where = (showHidden, language) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return {};
+  }
 
-  await moveImage(tempDir, newDir, filename);
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden ? {} : { hidden: false };
 
-  // Delete temp image
-  await deleteImage(path.join(tempDir, filename));
+  return { where: { ...sHidden, ...oLanguage } };
+};
 
-  return true;
-}
+const whereChapter = (showHidden, language) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return {};
+  }
+
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden
+    ? {}
+    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
+
+  return { where: { ...sHidden, ...oLanguage } };
+};
+
+const whereChapterWId = (showHidden, language, workId) => {
+  const isAllLanguage = language === -1 || language === undefined;
+  if (showHidden && isAllLanguage) {
+    return { where: workId };
+  }
+
+  const oLanguage = isAllLanguage ? {} : { language };
+  const sHidden = showHidden
+    ? {}
+    : { hidden: false, releaseDate: { [Op.lt]: new Date() } };
+
+  return { where: { ...sHidden, ...oLanguage, workId } };
+};
+
+const whereCond = showHidden => (showHidden ? {} : { hidden: false });
 
 const descriptionJoin = lang =>
   lang !== -1

@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
+import { GraphQLUpload } from 'graphql-upload';
 
 // App Imports
 import { PostType } from './types';
@@ -61,7 +62,7 @@ export const postCreate = {
 
     thumbnail: {
       name: 'thumbnail',
-      type: GraphQLString
+      type: GraphQLUpload
     }
   },
   resolve: create
@@ -128,7 +129,7 @@ export const postUpdate = {
 
     thumbnail: {
       name: 'thumbnail',
-      type: GraphQLString
+      type: GraphQLUpload
     }
   },
   resolve: update
