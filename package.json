@@ -16,13 +16,13 @@
   "scripts": {
     "lint": "eslint src",
     "prettier": "pretty-quick --staged",
-    "setup": "yarn setup:install && yarn setup:db",
-    "setup:install": "yarn install",
-    "setup:db": "yarn db:migrate && yarn db:seed",
+    "setup": "npm run setup:install && npm run setup:db",
+    "setup:install": "npm run install",
+    "setup:db": "npm run db:migrate && npm run db:seed",
     "db:migrate": "./node_modules/.bin/sequelize db:migrate",
     "db:seed": "./node_modules/.bin/sequelize db:seed:all",
     "start": "cross-env NODE_ENV=development nodemon src/index.js --exec babel-node",
-    "start:prod": "cross-env NODE_ENV=production yarn build:prod && yarn start:server",
+    "start:prod": "cross-env NODE_ENV=production npm run build:prod && npm run start:server",
     "build:prod": "babel src -s -D -d build",
     "start:server": "cross-env NODE_ENV=production node build/index.js",
     "release": "standard-version",
@@ -85,6 +85,7 @@
     "graphql-depth-limit": "^1.1.0",
     "graphql-tools": "^4.0.6",
     "graphql-type-json": "^0.3.1",
+    "graphql-upload": "^9.0.0",
     "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.15",
     "morgan": "^1.9.1",
@@ -100,7 +101,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && yarn prettier"
+      "pre-commit": "npm run lint && npm run prettier"
     }
   }
 }

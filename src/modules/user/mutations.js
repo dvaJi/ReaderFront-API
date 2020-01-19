@@ -2,8 +2,30 @@
 import { GraphQLString, GraphQLInt } from 'graphql';
 
 // App Imports
-import { UserType } from './types';
-import { create, remove, activate } from './resolvers';
+import { UserType, UserLoginType } from './types';
+import { login, create, remove, activate } from './resolvers';
+
+// Auth
+export const userLogin = {
+  type: UserLoginType,
+  args: {
+    email: {
+      name: 'email',
+      type: GraphQLString
+    },
+
+    password: {
+      name: 'password',
+      type: GraphQLString
+    },
+
+    role: {
+      name: 'role',
+      type: GraphQLString
+    }
+  },
+  resolve: login
+};
 
 // Create
 export const userSignup = {

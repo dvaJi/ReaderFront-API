@@ -1,10 +1,11 @@
 import path from 'path';
-import sharp from 'sharp';
 
 // App Imports
-import { deleteImage, moveImage } from '../../setup/images-helpers';
+import { deleteImage, storeImage } from '../../setup/images-helpers';
 import params from '../../config/params';
 import models from '../../setup/models';
+
+const WORKS_PATH = path.join(__dirname, '..', '..', '..', 'public', 'works');
 
 // Get pages by chapter
 export async function getByChapter(parentValue, { chapterId }) {
@@ -17,11 +18,7 @@ export async function getByChapter(parentValue, { chapterId }) {
 }
 
 // Create page
-export async function create(
-  parentValue,
-  { chapterId, filename, hidden, size, mime },
-  { auth }
-) {
+export async function create(_, { chapterId, file, size }, { auth }) {
   if (auth.user && auth.user.role === params.user.roles.admin) {
     const chapter = await models.Chapter.findOne({
       where: {
@@ -30,37 +27,26 @@ export async function create(
       include: [{ model: models.Works, as: 'work' }]
     });
     const chapterDetails = chapter.get();
-    const oldDir = path.join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      'public',
-      'images',
-      'uploads'
-    );
-    const newDir = path.join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      'public',
-      'works',
+
+    const coverPath = path.join(
+      WORKS_PATH,
       chapterDetails.work.uniqid,
       chapterDetails.uniqid
     );
-    await moveImage(oldDir, newDir, filename);
-    const imageProp = await sharp(path.join(newDir, filename))
-      .metadata()
-      .then(data => ({ width: data.width, height: data.height }));
+
+    const { filename, mimetype, width, height } = await storeImage(
+      file,
+      coverPath,
+      true
+    );
+
     return await models.Page.create({
       chapterId,
       filename,
-      hidden,
-      height: imageProp.height,
-      width: imageProp.width,
+      height,
+      width,
       size,
-      mime
+      mime: mimetype
     });
   } else {
     throw new Error('Operation denied.');

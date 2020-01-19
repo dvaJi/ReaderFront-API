@@ -1,6 +1,7 @@
 // Imports
 import graphqlHTTP from 'express-graphql';
 import depthLimit from 'graphql-depth-limit';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 // App Imports
 import { GRAPHQL_IDE } from '../config/env';
@@ -17,6 +18,7 @@ export default function(server) {
   // API (GraphQL on route `/`)
   server.use(
     serverConfig.graphql.endpoint,
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
     graphqlHTTP(request => ({
       schema,
       graphiql: GRAPHQL_IDE,

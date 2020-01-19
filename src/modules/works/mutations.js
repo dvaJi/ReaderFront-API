@@ -1,5 +1,6 @@
 // Imports
 import { GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
+import { GraphQLUpload } from 'graphql-upload';
 import { GraphQLJSON } from 'graphql-type-json';
 
 // App Imports
@@ -57,7 +58,7 @@ export const workCreate = {
 
     thumbnail: {
       name: 'thumbnail',
-      type: GraphQLString
+      type: GraphQLUpload
     },
 
     works_descriptions: {
@@ -129,7 +130,7 @@ export const workUpdate = {
 
     thumbnail: {
       name: 'thumbnail',
-      type: GraphQLString
+      type: GraphQLUpload
     },
 
     adult: {

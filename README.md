@@ -17,13 +17,13 @@
 - Configurations
   - Modify `/.env.example` to configurate the app (IMPORTANT) (you should rename it to `/.env`)
 - Setup
-  - API: Install packages and database setup (migrations and seed) `yarn setup`
+  - API: Install packages and database setup (migrations and seed) `npm run setup`
 - Development
-  - Run API `yarn start`, browse GraphiQL at http://localhost:8000/
-  - Run [Webapp](https://github.com/dvaJi/ReaderFront) `go to ReaderFront directory` and `yarn start`, browse webapp at http://localhost:3000/
+  - Run API `npm start`, browse GraphiQL at http://localhost:8000/
+  - Run [Webapp](https://github.com/dvaJi/ReaderFront) `go to ReaderFront directory` and `npm start`, browse webapp at http://localhost:3000/
 - Production
-  - Run API `yarn start:prod`, creates an optimized build in `build` directory and runs the server
-  - Run [Webapp](https://github.com/dvaJi/ReaderFront) `go to ReaderFront directory` and `yarn build`, creates an optimized build in `build` directory
+  - Run API `npm run start:prod`, creates an optimized build in `build` directory and runs the server
+  - Run [Webapp](https://github.com/dvaJi/ReaderFront) `go to ReaderFront directory` and `npm run build`, creates an optimized build in `build` directory
 
 ## Core Structure
 
